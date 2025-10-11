@@ -15,8 +15,8 @@
 #include <float.h>
 #include <stdbool.h>
 #include <string.h>
+#include <math.h>
 #include <time.h>
-#include <math.h>   /* pour tester 1.1 */
 
 void print_f(float f) {
     printf("float:       %.9g  (%.9f)\n", f, f);
@@ -61,7 +61,7 @@ long double e_ld(void) {
 float suite_y_f(void) {
     float y = e_f() - 1;
     for (size_t i = 1; i < 30; i++) {
-        print_f(y);
+        /*print_f(y);*/
         y = (float)i * y - 1;
     }
     return y;
@@ -69,7 +69,7 @@ float suite_y_f(void) {
 double suite_y_d(void) {
     double y = e_d() - 1;
     for (size_t i = 1; i < 30; i++) {
-        print_d(y);
+        /*print_d(y);*/
         y = (double)i * y - 1;
     }
     return y;
@@ -77,7 +77,7 @@ double suite_y_d(void) {
 long double suite_y_ld(void) {
     long double y = e_ld() - 1;
     for (size_t i = 1; i < 30; i++) {
-        print_ld(y);
+        /*print_ld(y);*/
         y = (long double)i * y - 1;
     }
     return y;
@@ -85,7 +85,7 @@ long double suite_y_ld(void) {
 float suite_z_f(void) {
     float y = e_f() - 1 + FLT_EPSILON;
     for (size_t i = 1; i < 30; i++) {
-        print_f(y);
+        /*print_f(y);*/
         y = (float)i * y - 1;
     }
     return y;
