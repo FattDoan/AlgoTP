@@ -1,3 +1,8 @@
 # AlgoTP
-Comiple: <!> Need strict warning flags
-gcc file.c -std=c90 -pedantic -Wall -Wextra -o file
+
+### Compile
+
+# clang compiler
+`clang Exo1.c -std=c99 -pedantic -Wall -Wextra -Werror -o Exo1`
+# gcc compiler
+`gcc Exo1.c -std=c99 -pedantic -Wall -Wextra -Werror -o Exo1`
