@@ -170,10 +170,13 @@ long fact(int n , int v )   // numéro de version
 float Efloat(void) {
     float res = 1;  
     float fact = 1;
-    for (int i = 1; i < 11; i++) {
-        fact *= (float)i;
+    int i = 0;
+    while (res + (float)1/fact != res) { 
         res += 1/fact;
+        i++;
+        fact *= (float)i;
     }
+    printf("Efloat. Nb d'approx: %d \n", i - 1);
     return res;
 }
 
@@ -182,10 +185,13 @@ float Efloat(void) {
 double Edouble(void) {
     double res = 1;  
     double fact = 1;
-    for (int i = 1; i < 18; i++) {
-        fact *= (double)i;
+    int i = 0;
+    while (res + (double)1/fact != res) { 
         res += 1/fact;
+        i++;
+        fact *= (double)i;
     }
+    printf("Efloat. Nb d'approx: %d \n", i - 1);
     return res;
 }
 
@@ -193,11 +199,14 @@ double Edouble(void) {
 
 long double Elongdouble(void) {
     long double res = 1;  
-    long double fact = 1;         
-    for (int i = 1; i < 30; i++) {
-        fact *= (long double)i;
+    long double fact = 1;
+    int i = 0;
+    while (res + (long double)1/fact != res) { 
         res += 1/fact;
+        i++;
+        fact *= (long double)i;
     }
+    printf("Efloat. Nb d'approx: %d \n", i - 1);
     return res;
 }
 /***************************************************************/
@@ -821,7 +830,7 @@ int main(void) {
       // e = 2,7182818284 5904523536 0287471352 6624977572 4709369995 
       //       9574966967 6277240766 3035354759 4571382178 5251664274
 
-    if (false) {  
+    if (true) {  
 
             printf(" e1 = %.20f  \n", Efloat() ) ;
             printf(" e3 = %.30lf \n", Edouble() ) ; 
@@ -831,7 +840,7 @@ int main(void) {
             
     }
 
-    if (false) {  
+    if (true) {  
                 printf("Valeurs de Y, selon float, double, longdouble :\n") ;
                 afficheYfloat(30) ;
                 afficheYdouble(30) ;
@@ -911,8 +920,6 @@ int main(void) {
 
     printf("*********************************************\n\n");
     /***********************************************************************/
-
-
 
     return 0;
 }
