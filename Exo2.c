@@ -319,8 +319,14 @@ int NTAZ_It (Liste L) {
 
 /*******/
 
-int NTAZ_Rec (Liste L)
-   { return 0 ; }
+int NTAZ_Rec (Liste L) {
+    if (L->suite == NULL) {
+        return (!L->valeur == 0);
+    }
+    if (L->valeur != 0) {
+        return (NTAZ_Rec(L->suite))+1;
+    }
+}
 
 /*******/
 
@@ -401,6 +407,7 @@ int main()
     Liste * six = tab2list(tab6),*sept = tab2list(tab7);
 
     printf("NombreTermesAvantZero %d \n",NTAZ_It(* sept));
+    printf("Rec : %d\n", NTAZ_Rec(*sept));
 
 }
 
