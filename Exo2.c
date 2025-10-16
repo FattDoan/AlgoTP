@@ -252,9 +252,13 @@ bool PlusCourteRec (Liste L1, Liste L2){
 /*******/
   
 bool PlusCourteIter (Liste L1, Liste L2){
-    while(L1->suite !=NULL && L2->suite != NULL) {
+    Liste lu = L1;
+    Liste ld = L2;
+    while(lu->suite !=NULL && ld->suite != NULL) {
+        lu = lu->suite;
+        ld = ld->suite;
     }
-    return true ; }
+    return (lu->suite==NULL && ld->suite!=NULL) ; }
    
   
 /********************************************/
@@ -351,7 +355,7 @@ int main()
     Liste * zero = tab2list(tab0), * un = tab2list(tab1),* deux = tab2list(tab2),* trois = tab2list(tab3);
     
     printf("unplusdeux : %b\n",UnPlusDeuxEgalTrois(*zero));
-    printf("pluscourte rec : %b \n",PlusCourteRec(*un,*trois));
+    printf("pluscourte rec : %b \n",PlusCourteIter(*un,*zero));
 
 }
 
