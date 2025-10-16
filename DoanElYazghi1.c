@@ -1,7 +1,7 @@
 /****************************************************************************************
  *                         RENDU DU TP ALGO : Partie 1                                  *   
  *  Noms du binôme: Thanh Phat DOAN (thanh-phat.doan@universite-paris-saclay.fr)        *
- *                  Naël EL YAZGHI  (nael.el-yazghi@universite-paris-saclay.fr)                                                  *
+ *                  Naël EL YAZGHI  (nael.el-yazghi@universite-paris-saclay.fr)         *
  *                                                                                      *
  *  Le code est conforme à la norme C99 et a été compilé avec les options               *
  *  les plus strictes: -std=c99 -pedantic -Wall -Wextra -Werror.                        *
@@ -237,6 +237,17 @@ void afficheLongDouble(long double ld) {
 /*                                                             */
 /***************************************************************/
 
+
+ /* Observation: On constate que le programme affiche bien un résultat 
+  * qui converge vers 0, avant de diverger vers l'infini, positif ou négatif selon les cas.
+  * Mathématiquement, yn converge vers 0 pour y0 = e-1, diverge vers +inf si 
+  * y0>e-1 et diverge vers -inf sinon.
+  * 
+  * Lorsque yn deviens suffisamment petit, l'erreur due à la précision sur les flottants est telle que yn sors 
+  * de la zone de convergence, ce qui explique le comportement du code.
+  */
+
+
 void afficheYfloat(int n) {
     float y = Efloat() - 1;
     for (int i = 1; i < n; i++) {
@@ -282,12 +293,6 @@ void afficheYlongdouble(int n) {
     return y;
 } */
 
- /* On constate que le programme affiche bien un résultat qui converge vers 0, avant de diverger vers l'infini
-    positif ou négatif selon les cas.
-    Mathématiquement, yn converge vers 0 pour y0 = e-1, diverge vers +inf si y0>e-1 et diverge vers -inf sinon.
-    Lorsque yn deviens suffisamment petit, l'erreur due à la précision sur les flottants est telle que yn sors 
-    de la zone de convergence, ce qui explique le comportement du code.
-    */
 
 /***************************************************************/
 /*                                                             */
