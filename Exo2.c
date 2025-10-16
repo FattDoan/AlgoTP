@@ -58,14 +58,6 @@ typedef Bloc *Liste ;
 // int premier(Liste l) { return l->valeur ; }
 // Liste suite(Liste l) { return l->suite ; }
 
-
-/****************/ el famoso sucre
-
-Liste listeVide() {
-    Liste l = malloc(sizeof(Bloc));
-    return l;
-}
-
 /****************/
 
 void depile(Liste *L)
@@ -81,30 +73,6 @@ Liste ajoute(int x, Liste l)
     tmp->valeur = x ;
     tmp->suite = l ;
     return tmp ;
-
-Liste ajoute(int x, Liste l)
-{   Liste tmp = (Liste) malloc(sizeof(Bloc)) ;
-    tmp->valeur = x ;
-    tmp->suite = l ;
-    return tmp ;
-}
-
-/*******/
-
-void empile(int x, Liste *L) 
-{ *L = ajoute(x,*L) ; }
-
-/*****************************/
-/*                           */
-/*       Affiche             */
-/*                           */
-/*****************************/
-
-void affiche_rec(Liste l)
-{
-    if (l == NULL)
-        printf("\n");
-    else
 }
 
 /*******/
@@ -222,6 +190,19 @@ void VideListe(Liste *L)
       
 }
 
+
+/* **************** */
+
+#define tab2list(tab) tab2list_aux(tab,sizeof(tab)/sizeof(int))
+
+Liste * tab2list_aux(int tab[], int size) {
+    Liste * l = malloc(sizeof(Bloc));
+    for (int i = size-1;i>-1;i--) {
+        empile(tab[i],l);
+    }
+    return l;
+}
+
 /********************************************/
 /*                                          */
 /*          UnPlusDeuxgalTrois              */
@@ -322,7 +303,7 @@ void TueRetroPos (Liste * L) {}
 
 int main()
 {
-    Liste l ;
+/*     Liste l ;
 
         l = NULL ;
         VireDernier_rec  (&l) ;
@@ -332,22 +313,23 @@ int main()
         printf(" %d \n", longueur_iter(l)) ; 
         printf(" %d \n", longueur_rec(l)) ; 
         VideListe(&l);
-
-
-        /* tests */
-        Liste unplus;
-        ajoute(23,unplus);
-        ajoute(19,unplus);
-        ajoute(42,unplus);
-        ajoute(4,unplus);
-        ajoute(2,unplus);
-        affiche_rec(unplus);
-/*         printf("unplusdeux : %b\n",UnPlusDeuxEgalTrois(unplus));
- */
-
-
-        return 0;
+        return 0; */
         
+
+    /* temporary tests */
+
+
+    int tab[] = {1,2,3};
+    Liste * temp = tab2list(tab);
+    affiche_iter(*temp);
+
+    Liste * un = malloc(sizeof(Bloc));
+    empile(2,un);
+    empile(2,un);
+    empile(2,un);
+    empile(2,un);
+    empile(2,un);
+    affiche_rec(*un);
 }
 
 
