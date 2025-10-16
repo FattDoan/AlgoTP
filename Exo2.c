@@ -58,6 +58,12 @@ typedef Bloc *Liste ;
 // int premier(Liste l) { return l->valeur ; }
 // Liste suite(Liste l) { return l->suite ; }
 
+/* ************ */
+
+Liste suite(Liste l) {
+    return l->suite;
+}
+
 /****************/
 
 void depile(Liste *L)
@@ -191,7 +197,7 @@ void VideListe(Liste *L)
 }
 
 
-/* **************** */
+/*  TAB2LIST */
 
 #define tab2list(tab) tab2list_aux(tab,sizeof(tab)/sizeof(int))
 
@@ -210,12 +216,22 @@ Liste * tab2list_aux(int tab[], int size) {
 /********************************************/
 
 bool UnPlusDeuxEgalTrois (Liste L) {  /* Note :PHAT, je dois fair egaffe au inout ici ? */
+
+    Liste temp = L;
     int count = 0;
-    for (int i = 0;i<2;i++) {
-        count +=L->valeur;
-        L = L->suite;
+    int indice = 0;
+    while(suite(temp)!=NULL && indice<2) {
+        count +=temp->valeur;
+        temp = temp->suite;
+        indice ++;
     }
-    return (count == L->valeur); }
+
+    if (indice == 2) {
+         return (count == L->valeur); 
+    }
+    count +=temp->valeur;
+    return count == 0;
+}
    
 /********************************************/
 /*                                          */
@@ -223,13 +239,22 @@ bool UnPlusDeuxEgalTrois (Liste L) {  /* Note :PHAT, je dois fair egaffe au inou
 /*                                          */
 /********************************************/
 
-bool PlusCourteRec (Liste L1, Liste L2)
-   { return true ; }
+bool PlusCourteRec (Liste L1, Liste L2){
+    if (L1->suite == NULL && L2->suite !=NULL) {
+        return 1;
+    }
+
+    if (L2->suite == NULL) {
+        return 0;
+    }
+    return PlusCourteRec(L1->suite,L2->suite); }
 
 /*******/
   
-bool PlusCourteIter (Liste L1, Liste L2)
-   { return true ; }
+bool PlusCourteIter (Liste L1, Liste L2){
+    while(L1->suite !=NULL && L2->suite != NULL) {
+    }
+    return true ; }
    
   
 /********************************************/
@@ -319,17 +344,15 @@ int main()
     /* temporary tests */
 
 
-    int tab[] = {1,2,3};
-    Liste * temp = tab2list(tab);
-    affiche_iter(*temp);
+    int tab0[] = {3,19,42,4,2};
+    int tab1[] = {2,-2};
+    int tab2[] = {2,3,27,1};
+    int tab3[] = {2};
+    Liste * zero = tab2list(tab0), * un = tab2list(tab1),* deux = tab2list(tab2),* trois = tab2list(tab3);
+    
+    printf("unplusdeux : %b\n",UnPlusDeuxEgalTrois(*zero));
+    printf("pluscourte rec : %b \n",PlusCourteRec(*un,*trois));
 
-    Liste * un = malloc(sizeof(Bloc));
-    empile(2,un);
-    empile(2,un);
-    empile(2,un);
-    empile(2,un);
-    empile(2,un);
-    affiche_rec(*un);
 }
 
 
