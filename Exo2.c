@@ -268,6 +268,16 @@ bool PlusCourteIter (Liste L1, Liste L2){
 /********************************************/
 
 bool VerifiekORec (Liste L, int k) {
+    if (L->suite == NULL) {
+        return (k == 1);
+    }
+    if (k<0) {
+        return 0;
+    }
+    if (L->valeur == 0) {
+        return (VerifiekORec(L->suite,k-1));
+    }
+    return VerifiekORec(L->suite,k);
 }
    
 /*******/
@@ -372,7 +382,7 @@ int main()
     int tab5[] = {2,0,0,7,0,6,2,4,0};
 
     Liste * quatre = tab2list(tab4), * cinq  = tab2list(tab5);
-    printf("VerifieIter : %b\n",VerifiekOIter(*cinq,4));
+    printf("VerifieIter : %b\n",VerifiekORec(*quatre,4));
 }
 
 
