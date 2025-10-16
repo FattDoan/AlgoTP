@@ -285,13 +285,13 @@ bool VerifiekORec (Liste L, int k) {
 bool VerifiekOIter (Liste L, int k)
    {Liste temp = L;
     int count = 0;
-    while(count<=k && L->suite!=NULL){
-        if (L->valeur == 0) {
+    while(count<=k && temp->suite!=NULL){
+        if (temp->valeur == 0) {
             count++;
         }
-        L = L->suite;
+        temp = temp->suite;
     }
-    if (L->valeur == 0) {
+    if (temp->valeur == 0) {
     count++;
     }
     return  (count == k); }
@@ -303,8 +303,9 @@ bool VerifiekOIter (Liste L, int k)
 /*                                          */
 /********************************************/
 
-int NTAZ_It (Liste L)
-   { return 0 ; }
+int NTAZ_It (Liste L) {
+    Liste copy = L;    int count = 0;
+}
 
 /*******/
 
