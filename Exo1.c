@@ -1,7 +1,7 @@
 /****************************************************************************************
  *                         RENDU DU TP ALGO : Partie 1                                  *   
  *  Noms du binôme: Thanh Phat DOAN (thanh-phat.doan@universite-paris-saclay.fr)        *
- *                  Naël EL YAZGHI  ()                                                  *
+ *                  Naël EL YAZGHI  (nael.el-yazghi@universite-paris-saclay.fr)                                                  *
  *                                                                                      *
  *  Le code est conforme à la norme C99 et a été compilé avec les options               *
  *  les plus strictes: -std=c99 -pedantic -Wall -Wextra -Werror.                        *
@@ -28,6 +28,7 @@ typedef enum {false, true} bool;
 #include <math.h>
 #include <time.h>
 
+/*1 - QUELQUE CALCULS SIMPLES*/
 
 /*************************************************************/
 /*                                                           */
@@ -167,6 +168,14 @@ long fact(int n , int v )   // numéro de version
  * mais c'est une bonne pratique quand même.
  * */
 
+ /* "Vous ne sommerez pas jusqu’`a l’infini... Quand et comment vous arrêterez-vous"
+        --> On a pris la décision de s'arrêter lorsque 1/n! deviens inférieur à la 
+            limite des constantes à virgule flottante, i.e. FLT_MIN = 1,175494351*10^-38 
+            pour les flottants. On obtient ce résultat directement en vérifiant la condition
+            1/n! = 0 à chaque itération.
+    
+ ?*/
+
 float Efloat(void) {
     float res = 1;  
     float fact = 1;
@@ -272,6 +281,13 @@ void afficheYlongdouble(int n) {
     }
     return y;
 } */
+
+ /* On constate que le programme affiche bien un résultat qui converge vers 0, avant de diverger vers l'infini
+    positif ou négatif selon les cas.
+    Mathématiquement, yn converge vers 0 pour y0 = e-1, diverge vers +inf si y0>e-1 et diverge vers -inf sinon.
+    Lorsque yn deviens suffisamment petit, l'erreur due à la précision sur les flottants est telle que yn sors 
+    de la zone de convergence, ce qui explique le comportement du code.
+    */
 
 /***************************************************************/
 /*                                                             */
@@ -596,7 +612,9 @@ int* P_random(int n) {
 }
 /************************* SUITE DE TESTS **********************************/
 
-/* helper macro pour faire des tests 
+/* helper macro pour faire des
+           printf("\n") ;
+ tests 
  * assert de C nous aussi suffit mais il quitte le program tout suite si l'un assert échoue
  * en plus, on veut d'avoir plusiers types d'assert */
 #define ASSERT(cond) do {   \

@@ -1,7 +1,7 @@
 /****************************************************************************************
  *                         RENDU DU TP ALGO : Partie 2                                  *   
  *  Noms du binôme: Thanh Phat DOAN (thanh-phat.doan@universite-paris-saclay.fr)        *
- *                  Naël EL YAZGHI  ()                                                  *
+ *                  Naël EL YAZGHI  (   )                                                  *
  *                                                                                      *
  *  Le code est conforme à la norme C99 et a été compilé avec les options               *
  *  les plus strictes: -std=c99 -pedantic -Wall -Wextra -Werror.                        *
@@ -25,8 +25,8 @@
 /*                                               */
 /*************************************************/
 
-typedef enum {false, true} bool;
-
+/* typedef enum {false, true} bool; Dude, wtf ?
+ */
 /*************************************************/
 /*                                               */
 /*          definition type liste                */
@@ -58,6 +58,14 @@ typedef Bloc *Liste ;
 // int premier(Liste l) { return l->valeur ; }
 // Liste suite(Liste l) { return l->suite ; }
 
+
+/****************/ el famoso sucre
+
+Liste listeVide() {
+    Liste l = malloc(sizeof(Bloc));
+    return l;
+}
+
 /****************/
 
 void depile(Liste *L)
@@ -73,6 +81,30 @@ Liste ajoute(int x, Liste l)
     tmp->valeur = x ;
     tmp->suite = l ;
     return tmp ;
+
+Liste ajoute(int x, Liste l)
+{   Liste tmp = (Liste) malloc(sizeof(Bloc)) ;
+    tmp->valeur = x ;
+    tmp->suite = l ;
+    return tmp ;
+}
+
+/*******/
+
+void empile(int x, Liste *L) 
+{ *L = ajoute(x,*L) ; }
+
+/*****************************/
+/*                           */
+/*       Affiche             */
+/*                           */
+/*****************************/
+
+void affiche_rec(Liste l)
+{
+    if (l == NULL)
+        printf("\n");
+    else
 }
 
 /*******/
@@ -196,8 +228,13 @@ void VideListe(Liste *L)
 /*                                          */
 /********************************************/
 
-bool UnPlusDeuxEgalTrois (Liste L)
-   { return true ; }
+bool UnPlusDeuxEgalTrois (Liste L) {  /* Note :PHAT, je dois fair egaffe au inout ici ? */
+    int count = 0;
+    for (int i = 0;i<2;i++) {
+        count +=L->valeur;
+        L = L->suite;
+    }
+    return (count == L->valeur); }
    
 /********************************************/
 /*                                          */
@@ -295,7 +332,22 @@ int main()
         printf(" %d \n", longueur_iter(l)) ; 
         printf(" %d \n", longueur_rec(l)) ; 
         VideListe(&l);
+
+
+        /* tests */
+        Liste unplus;
+        ajoute(23,unplus);
+        ajoute(19,unplus);
+        ajoute(42,unplus);
+        ajoute(4,unplus);
+        ajoute(2,unplus);
+        affiche_rec(unplus);
+/*         printf("unplusdeux : %b\n",UnPlusDeuxEgalTrois(unplus));
+ */
+
+
         return 0;
+        
 }
 
 
