@@ -304,7 +304,17 @@ bool VerifiekOIter (Liste L, int k)
 /********************************************/
 
 int NTAZ_It (Liste L) {
-    Liste copy = L;    int count = 0;
+    Liste copy = L;
+    int count = 0;
+
+    while(copy->suite!=NULL && copy->suite->valeur!=0) {
+        count++;
+        copy =copy->suite;
+    }
+    if (copy->suite == NULL) {
+        return count+1;
+    }
+    return count;
 }
 
 /*******/
@@ -384,6 +394,14 @@ int main()
 
     Liste * quatre = tab2list(tab4), * cinq  = tab2list(tab5);
     printf("VerifieIter : %b\n",VerifiekORec(*quatre,4));
+
+    int tab6[] = {3,2,9,5,0,6,0};
+    int tab7[] = {3,2,9,5};
+
+    Liste * six = tab2list(tab6),*sept = tab2list(tab7);
+
+    printf("NombreTermesAvantZero %d \n",NTAZ_It(* sept));
+
 }
 
 
