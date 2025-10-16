@@ -267,13 +267,24 @@ bool PlusCourteIter (Liste L1, Liste L2){
 /*                                          */
 /********************************************/
 
-bool VerifiekORec (Liste L, int k)
-   { return true ; }
+bool VerifiekORec (Liste L, int k) {
+}
    
 /*******/
 
 bool VerifiekOIter (Liste L, int k)
-   { return true ; }
+   {Liste temp = L;
+    int count = 0;
+    while(count<=k && L->suite!=NULL){
+        if (L->valeur == 0) {
+            count++;
+        }
+        L = L->suite;
+    }
+    if (L->valeur == 0) {
+    count++;
+    }
+    return  (count == k); }
    
 
 /********************************************/
@@ -357,6 +368,11 @@ int main()
     printf("unplusdeux : %b\n",UnPlusDeuxEgalTrois(*zero));
     printf("pluscourte rec : %b \n",PlusCourteIter(*un,*zero));
 
+    int tab4[] = {2,0,0,7,0,6,2,4,0};
+    int tab5[] = {2,0,0,7,0,6,2,4,0};
+
+    Liste * quatre = tab2list(tab4), * cinq  = tab2list(tab5);
+    printf("VerifieIter : %b\n",VerifiekOIter(*cinq,4));
 }
 
 
