@@ -203,10 +203,19 @@ void VideListe(Liste *L)
 /********************************************/
 
 /*
+<<<<<<< HEAD
  *  On ajoute L->valeur jusqu'à ce que (cnt == 2 ou soit L == NULL)
  *  --> Si |L| < 2, on ajoute 0 à la somme (les nombres manquants sont comptabilisés comme des 0) 
  *  Après la boucle while, le curseur est sur 3ème element. Si (L == NULL), càd |L| < 3, on compare avec 0,
  *  sinon on compare avec le 3ème élément.
+=======
+ *  On ajoute L->valeur à sum aussi longtemps que possible (jusqu'à ce que cnt == 2 ou L == NULL)
+ *  --> de toute facon, si |L| < 2, les nombres manquants sont remplacés par des zéros, conformément à l'énoncé.
+ *  Après la boucle while,
+ *  le curseur est sur le 3eme element,  si (L == NULL), cad |L| < 3, on compare avec 0, sinon,
+ *  on compare avec le 3e élément. 
+ *
+>>>>>>> 53b1b59a6d03c032310b62664c86095cf199349e
  */
 
 bool UnPlusDeuxEgalTrois (Liste L) { 
@@ -227,7 +236,11 @@ bool UnPlusDeuxEgalTrois (Liste L) {
 /********************************************/
 
 /*
+<<<<<<< HEAD
  * On parcourt L1 et L2 en même temps aussi longtemps que possible.
+=======
+ * On parcourt L1 et L2 en même temps aussi longtemps que possible
+>>>>>>> 53b1b59a6d03c032310b62664c86095cf199349e
  * Si L1 == NULL avant L2, alors |L1| < |L2|
  * Sinon, |L1| >= |L2|
  */
@@ -256,7 +269,7 @@ bool PlusCourteIter (Liste L1, Liste L2){
 /********************************************/
 
 /*
- *  On profite la variable k pour compter le nombre de 0 
+ *  On profite de la variable k pour compter le nombre de 0 
  *  il nous reste jusqu'a` L, cad:
  *  Verifiek0(L, k) = Verifiek0(L->suite, k - 1) si L->valeur == 0
  *                  = Verifiek0(L->suite, k)     si L->valeur != 0
