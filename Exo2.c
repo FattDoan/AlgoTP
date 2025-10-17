@@ -203,11 +203,10 @@ void VideListe(Liste *L)
 /********************************************/
 
 /*
- *  On ajoute L->valeur tant que on peut (jusqu'a` cnt == 2 ou soit L == NULL)
- *  --> de toute facon, si |L| < 2, on n'ajoute pas a la somme 
- *  Et donc, apres la boucle while
- *  L est sur 3eme element,  si (L == NULL), cad |L| < 3, on campare avec 0
- *                           sinon le 3eme element
+ *  On ajoute L->valeur jusqu'à ce que (cnt == 2 ou soit L == NULL)
+ *  --> Si |L| < 2, on ajoute 0 à la somme (les nombres manquants sont comptabilisés comme des 0) 
+ *  Après la boucle while, le curseur est sur 3ème element. Si (L == NULL), càd |L| < 3, on compare avec 0,
+ *  sinon on compare avec le 3ème élément.
  */
 
 bool UnPlusDeuxEgalTrois (Liste L) { 
@@ -228,8 +227,8 @@ bool UnPlusDeuxEgalTrois (Liste L) {
 /********************************************/
 
 /*
- * On parcourt L1 et L2 en meme temps aussi longtemps que possible
- * Si L1 == NULL avant L2 -> |L1| < |L2|
+ * On parcourt L1 et L2 en même temps aussi longtemps que possible.
+ * Si L1 == NULL avant L2, alors |L1| < |L2|
  * Sinon, |L1| >= |L2|
  */
 
