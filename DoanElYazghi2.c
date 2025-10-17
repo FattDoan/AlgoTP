@@ -205,7 +205,8 @@ void VideListe(Liste *L)
 
 /*
  *  On ajoute L->valeur à sum aussi longtemps que possible (jusqu'à ce que cnt == 2 ou L == NULL)
- *  --> de toute facon, si |L| < 2, les nombres manquants sont remplacés par des zéros, conformément à l'énoncé.
+ *  --> de toute facon, si |L| < 2, les nombres manquants sont remplacés par des zéros, conformément à 
+ *  l'énoncé.
  *  Après la boucle while,
  *  le curseur est sur le 3eme element,  si (L == NULL), cad |L| < 3, on compare avec 0, sinon,
  *  on compare avec le 3e élément. 
@@ -260,8 +261,8 @@ bool PlusCourteIter (Liste L1, Liste L2){
 /********************************************/
 
 /*
- *  On profite de la variable k pour compter le nombre de 0 
- *  il nous reste jusqu'a` L, cad:
+ *  On utilise la variable k pour compter le nombre de 0 
+ *  qu'il nous reste jusqu'au dernier 0, cad:
  *  Verifiek0(L, k) = Verifiek0(L->suite, k - 1) si L->valeur == 0
  *                  = Verifiek0(L->suite, k)     si L->valeur != 0
  *  Cas de base:
@@ -298,9 +299,9 @@ bool VerifiekOIter (Liste L, int k) {
 /********************************************/
 
 /*
- *  C'est plutot evident iterativement:
- *  On parcourt jusqu'a` ce que l'on rencontre le 1er 0
- *  -> renvoie tout suite la position
+ *  Le code itératif est assez intuitif.
+ *  On parcourt jusqu'à` ce que l'on rencontre le 1er 0
+ *  -> On renvoie tout de suite la position de ce dernier.
  *
  */
 
@@ -316,7 +317,7 @@ int NTAZ_It (Liste L) {
 
 /********************************************************************/
 /*
- *  La formule de recursion:
+ *  Formule de recursion:
  *  if (L != NULL):
  *                  NTAZ(L) = 1 + NTAZ(L->suite) si L->valeur != 0    
  *                  NTAZ(L) = 0                  si L->valeur == 0  --> Cas de base
@@ -329,12 +330,12 @@ int NTAZ_Rec (Liste L) {
     return 1 + NTAZ_Rec(L->suite);
 }
 
-/********************************************************************/
+/*******************************************************************/
 /*
- *  Pour d'etre recursif terminal, on stocke le resultat dans 
- *  une valeur qui est passe' en argument et on la renvoie en cas de base
- *  Donc on reecrit la formule:
- *  if (L != NULL):
+ *  Pour être récursif terminal, on stocke le résultat dans 
+ *  une valeur qui est passée en argument et on la renvoie lors du cas de base
+ *  On réécrit donc la formule de cette manière:
+ *  if (L != NULL)
  *                  NTAZ(L, cnt) = NTAZ(L->suite, cnt + 1) si L->valeur != 0    
  *                  NTAZ(L, cnt) = cnt                     si L->valeur == 0 --> Cas de base
  *  else:       
@@ -357,8 +358,8 @@ int NTAZ_RTSF (Liste L) {
 /********************************************************************/
 
 /*
- * Car on ne peut pas renvoyer le resultat, on met a jour le resultat
- * directment via un pointeur d'un entier 
+ * On ne peut pas renvoyer le resultat, on met donc à jour le resultat
+ * directment via un pointeur d'entier. 
  */
 
 void NTAZ_RTSP_aux(Liste L, int* cnt) {
@@ -381,13 +382,12 @@ int NTAZ_RTSP (Liste L) {
 /********************************************/
 
 /*
- * Car on a besoin de savoir a chaque etape (L),
- * quelle est la position courante donc on definit 
- * une procedure auxiliaire qui peut la prendre.
+ * Comme on a besoin de connaître à chaque etape (L) la position courante, on definit donc
+ * une procedure auxiliaire permet d'initialiser la fonction à 1.
  *
- * Il nous reste donc d'être prudent lors de la suppression d'un
- * élément avec le pointeur double si l'élément actuel == pos
- * (si on supprime un élément, on ne doit pas encore déplacer L = &(*L)->suite).
+ * Il faut ensuite être prudent lors de la suppression d'un
+ * élément avec le pointeur double si l'élément actuel == pos.
+ * (lors de la suppression d'un élément, on ne doit pas encore déplacer immédiatement L = &(*L)->suite).
  */
 void TuePosRec_aux(Liste *L, int pos) {
     if (*L && (*L)->valeur == pos) {
@@ -430,13 +430,13 @@ void TuePosIt (Liste * L) {
 /********************************************/
 
 /*
- * L'atuce est inspire par question 11. Pif(l) du TD2.
+ * L'atuce est inspirée par question 11. Pif(l) du TD2.
  * 
- * On maintien un pointer posBack 
- * (moralement c'est une variable "globale" pour cette fonction)
- * Tant que L n'est pas a la fin, on avance L par un appel recursif
- * Et apres, lorsqu'on depile, on augmente posBack -> la position courant depuis la fin
- * Donc, si la valeur d'element == posBack -> on l'enleve 
+ * On maintient un pointer posBack
+ * (moralement ce n'est pas une variable "globale" pour cette fonction)
+ * Tant que le curseur n'est pas arrivé à la fin de la liste, on avance L par un appel récursif
+ * Lorsque l'on depile, on augmente posBack -> la position courante en partant de la fin
+ * Donc, si l'élement courant a pour valeur posBack, on l'enlève 
  *
  */
 void TueRetroPos_aux(Liste* L, int* posBack) {

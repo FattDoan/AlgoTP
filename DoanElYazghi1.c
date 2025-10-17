@@ -174,7 +174,7 @@ long fact(int n , int v )   // numéro de version
             pour les flottants. On obtient ce résultat directement en vérifiant la condition
             1/n! = 0 à chaque itération.
     
- ?*/
+ */
 
 float Efloat(void) {
     float res = 1;  
@@ -240,11 +240,12 @@ void afficheLongDouble(long double ld) {
 
  /* Observation: On constate que le programme affiche bien un résultat 
   * qui converge vers 0, avant de diverger vers l'infini, positif ou négatif selon les cas.
+  *
   * Mathématiquement, yn converge vers 0 pour y0 = e-1, diverge vers +inf si 
   * y0>e-1 et diverge vers -inf sinon.
   * 
-  * Lorsque yn deviens suffisamment petit, l'erreur due à la précision sur les flottants est telle que yn sors 
-  * de la zone de convergence, ce qui explique le comportement du code.
+  * Lorsque yn deviens suffisamment petit, l'erreur due à la précision sur les flottants est telle que
+  * yn sors de la zone de convergence, ce qui explique le comportement du code.
   */
 
 
@@ -335,8 +336,8 @@ int SyracuseSF(int n) {
 /***************************************************************/
 
 /* terminal recursif avec sous-procédure 
- * L'idée est la même que ci-dessus. Cependant,
- * car on ne peut pas renvoyer une valeur, on modifie
+ * L'idée est la même que précedemment. Cependant ici
+ * on ne peut pas renvoyer une valeur, on modifie donc
  * directement la valeur syr en passant syr comme un pointeur
  * vers la valeur actuel
  * */
@@ -362,7 +363,7 @@ int SyracuseSP(int n) {
 /***************************************************************/
 
 /* recursif sans sous-fonctionalité 
- * L'idée est de la fonction recursive classique fibonacci
+ * L'idée la même que la fonction recursive classique fibonacci
  * */
 
 int SyracuseR(int n) {
@@ -396,15 +397,15 @@ int Syracuse(int n, int i) {
 
 /* Note: *******************************************************
  * On écrit const int* P comme argument pour indiquer          *
- * que on garantit que on ne modifie pas P et ce que on renvoie* 
- * (la nouveulle permutation de type *int) est alloué          *
- * et doit donc être libéré finalement                         *
+ * que l'on garantit que l'on ne modifie pas P.Ce que l'on     *
+ * renvoie(la nouvelle permutation de type *int) est alloué   *
+ * et doit donc être libéré finalement .                        *
  * *************************************************************/
 
-int Int_Lire (void)  // Lecture simpliste d'un entier positif ou nul
-                    // ignore les char avant le premier chiffre
-                    // s'arrête en absorbant le char après le dernier chiffre
-                    // exemple "truc bidule 345x" donne 345
+int Int_Lire (void)  //-- Lecture simpliste d'un entier positif ou nul
+                    // -- Ignore les char avant le premier chiffre
+                    // -- S'arrête en absorbant le char après le dernier chiffre
+                    // -- Exemple : "truc bidule 345x" donne 345
 { char c ; 
  do c = getchar() ; while ( c<'0' || c>'9') ;
  int n = (int) (c - '0') ;
@@ -463,14 +464,14 @@ int* P_Inverse(const int* P, int n) {
 /***************************************************************/
 
 /* Ici, au lieu d’appliquer directement R[i] = P[Q[i]], on passe par
- * une variable temporaire tmp, puis on recopie ensuite de tmp vers R.
- * La raison est qu’on veut avoir R = P o Q de sorte que
+ * une variable temporaire tmp, puis on recopie tmp vers R.
+ * La raison est que l'on cherche à obtenir R = P o Q de sorte que
  * R puisse aussi être P et/ou Q (R apparaît dans le membre de droite).
  * Par ex : P = P o Q , P = P o R , P = P o P
- * En effet, dans ce cas, on ne peut pas accéder et modifier P en même temps. 
+ * En effet, dans ce cas de figure, on ne peut pas accéder et modifier P en même temps. 
  * 
- * Grâce à cela, il facilite et rend notre code, 
- * surtout dans les fonctions de puissance, plus propre et plus concis. */
+ * Cela rend notre code plus lisible,propre et concis, 
+ * surtout dans les fonctions de puissance. */
 
 void P_Compose(const int* P, const int* Q, int* R, int n) {
     int* tmp = malloc(sizeof(int) * n);
@@ -483,17 +484,17 @@ void P_Compose(const int* P, const int* Q, int* R, int n) {
 
 /***************************************************************/
 
-/* C'est trivial de trouver cet algo pour vérification de P:
- * Pour chaque P[i], on check
+/* Le premier algorithme qui nous viens à l'esprit :
+ * Pour chaque P[i], on vérifie ces conditions :
  * - Si P[i] est dans [0, n-1(
  * - Si il existe j != i tq P[i] == P[j]
- * Toutefois, il a le complexité de O(N^2).
- * On peut utiliser plus de mémoire (tableau seen[] de taille N) 
+ * Toutefois, il a une complexité O(N^2).
+ * On peut utiliser plus de mémoire (avec un tableau seen[] de taille N) 
  * pour effectuer cette vérification en O(N):
  * 
- * Pour tout i dans [0, n-1(, seen[i] signifie si on a déjà vu la valeur i dans P[]
- * Pour chaque i, si on l'a pas vu la valeur P[i] 
- *          -> Ok et donc, mise à jour seen[P[i]] = true
+ * Pour tout i dans [0, n-1(, seen[i] signifie si que l'on a déjà vu la valeur i dans P[]
+ * Pour chaque i, si on l'a pas vu la valeur P[i] :
+ *          -> On valide,et donc, mise à jour de seen[P[i]] = true
  *          -> Sinon, P n'est pas valide
  * */
 
@@ -562,7 +563,7 @@ int* P_power3(const int* P, int n, int k) {
 /***************************************************************/
 
 /* version iterative rapide 
- * C'est juste de traduire la formule de récursion au style 'bottom up'
+ * Il est juste question de traduire la formule de récursion au style 'bottom up'
  * 
  * pow(P, n, 0)       = P_identite(n)
  * pow(P, n, 2*k)     = pow(P, n, k) * pow(P, n, k) 
@@ -600,7 +601,7 @@ int* P_power(const int* P, int n, int k, int v )   // version v de 1 à Versions
 
 /***************************************************************/
 
-/* Pour d'avoir la même probabilité sur toutes les permutations
+/* Pour avoir la même probabilité sur toutes les permutations
  * On implémente le mélange de Fisher-Yates
  * Complexité: O(n)
  **/
@@ -617,11 +618,10 @@ int* P_random(int n) {
 }
 /************************* SUITE DE TESTS **********************************/
 
-/* helper macro pour faire des
+/* helper macro pour faire des tests
            printf("\n") ;
- tests 
- * assert de C nous aussi suffit mais il quitte le program tout suite si l'un assert échoue
- * en plus, on veut d'avoir plusiers types d'assert */
+ * assert de C suffit mais il quitte le programme tout suite si l'un assert échoue
+ * en plus, on permet d'avoir plusieurs types d'assert */
 #define ASSERT(cond) do {   \
     if (!(cond)) {    \
         printf("\nTEST FAILED: %s:%d: %s\n", __FILE__, __LINE__, #cond);   \
@@ -636,10 +636,12 @@ int* P_random(int n) {
 void TEST_1_1(void) {
     printf("1.1 TEST : ");
     /* Note:
-     * La fonction exp() de math.h nous suffit aussi, 
-     * mais elle nécessite linking lors de la compilation, selon le compilateur et le système 
+     * La fonction exp() de math.h nous suffirait aussi, 
+     * mais elle nécessite un linking lors de la compilation, selon le compilateur et le système,
+     * cela pourrait poser problème.
      * (par exemple, gcc fonctionne sur mon système, mais clang nécessite une liaison). 
-     * Ecrire à la main la constante semble chelou mais il est le plus portable pour tester.
+     * Ecrire à la main la constante semble étrang au premier abord mais c'est la solution la plus
+     * généraliste que nous avons trouvé.
      */
     float e_math_f = 2.71828182845904523536028747135266249775724709369995f;
     double e_math_d = 2.71828182845904523536028747135266249775724709369995;
@@ -657,7 +659,7 @@ void TEST_1_1(void) {
     /*  Note:
      *  En fait, l'epsilon pour tester long double devrait être plus petit (de 1e-18 à 1e-21). 
      *  Cependant, sous Windows, long double utilise 8 octets comme double, 
-     *  de sorte que cela échouerait sur le système Windows si on testait avec un epsilon aussi strict. 
+     *  Si on testait avec un epsilon aussi strict,on échouerait sur le système Windows . 
      * (contrairement à Linux et MacOS qui encodent long double en 16 octets)
      **/
     long double eld = Elongdouble();
@@ -769,7 +771,7 @@ void TEST(void) {
 }
 
 int main(void) {
-    srand(time(NULL));      // pour P_random d'etre "plus" randomise
+    srand(time(NULL));      // permet à P_random d'etre "plus" aléatoire
     
     /******** Nos propres suites de tests automatiques (memory-leak free) *********/
     TEST();
@@ -780,7 +782,7 @@ int main(void) {
     
     /* Note: ***********************************************************************
      * Les tests donnés par le fichier Algo1.c devraient marcher sans modification *
-     * Mettez "if true" vs "if false" selon que vous voulez les tests ou pas       *
+     * Mettez "if true" vs "if false" selon le résulat désiré                      *
      * *****************************************************************************/
 
      printf("******** Suites de tests données du TP *******\n");
@@ -875,9 +877,10 @@ int main(void) {
     /******************************* Permutations **************************/
     
     /* Note: ***************************************************************
-     * Les tests P_power ici sont mal conçus. En effet, comme P_power      *
-     * alloue toujours de la nouvelle mémoire pour la permutation P^k mais *
-     * on ne la capture pas, on ne peut pas la libérer à la fin.           *
+     * Les tests P_power sont ici mal conçus. En effet, comme P_power      *
+     * alloue constamment de la nouvelle mémoire pour la permutation P^k,  *
+     * et que cette mémoire n'est jamais capturée, on ne peut pas la
+     * libérer à la fin.                                                   *
      ***********************************************************************/
     if (false) 
 
