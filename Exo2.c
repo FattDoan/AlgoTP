@@ -26,15 +26,6 @@
 /*************************************************/
 
 typedef enum {false, true} bool; 
-// Dude, wtf ?
-// PHAT : back in the good old days C didnt have bool type (only int),
-// to use bool we must import <bool.h> lib.
-// however, the prof doesnt want to use the lib so he create an alias for it.
-// I compile the code with -std=c99, meaning using the C version 1999
-// why? because the prof really old school and any modern feature 
-// (like including bool type automatically) may not work on the prof system
-// Even if the code is correct but doesnt work/compile on his machine
-// we still get cooked
 
 /*************************************************/
 /*                                               */
@@ -205,40 +196,21 @@ void VideListe(Liste *L)
       
 }
 
-
-
-
 /********************************************/
 /*                                          */
 /*          UnPlusDeuxgalTrois              */
 /*                                          */
 /********************************************/
 
-bool UnPlusDeuxEgalTrois (Liste L) {  /* Note :PHAT, je dois fair egaffe au inout ici ? 
-                                               Phat: non, en bref, utilise Liste L (sans *) si L n'est pas modifie -> type 'in'
-                                                                   sinon Liste* L -> type 'inout'
-                                      */
+/*
+ *  On ajoute L->valeur tant que on peut (jusqu'a` cnt == 2 ou soit L == NULL)
+ *  --> de toute facon, si |L| < 2, on n'ajoute pas a la somme 
+ *  Et donc, apres la boucle while
+ *  L est sur 3eme element,  si (L == NULL), cad |L| < 3, on campare avec 0
+ *                           sinon le 3eme element
+ */
 
-    /* Comment: fail on case [23,19,42,4,2] -> 1 
-     *          you dont need to create temp variable = L
-     *          just iterate on L directly
-     * */
-    /*
-    Liste temp = L;
-    int count = 0;
-    int indice = 0;
-    while(suite(temp)!=NULL && indice<2) {
-        count +=temp->valeur;
-        temp = temp->suite;
-        indice ++;
-    }
-    if (indice == 2) {
-         return (count == L->valeur);       //--> here spot the error? 
-    }
-    count +=temp->valeur;
-    return count == 0; 
-   */
-
+bool UnPlusDeuxEgalTrois (Liste L) { 
     int cnt = 0, sum = 0;
     while (L && cnt < 2) {
         sum += (L->valeur);
@@ -247,7 +219,6 @@ bool UnPlusDeuxEgalTrois (Liste L) {  /* Note :PHAT, je dois fair egaffe au inou
     }
     bool ret = (L) ? (sum == L->valeur) : (sum == 0);
     return ret; 
-
 }
    
 /********************************************/
@@ -256,78 +227,46 @@ bool UnPlusDeuxEgalTrois (Liste L) {  /* Note :PHAT, je dois fair egaffe au inou
 /*                                          */
 /********************************************/
 
-bool PlusCourteRec (Liste L1, Liste L2){
-    
-    /*
-     * Comment: if L1 or L2 empty (== NULL) -> segfault
-    if (L1->suite == NULL && L2->suite !=NULL) {
-        return 1;
-    }
+/*
+ * On parcourt L1 et L2 en meme temps aussi longtemps que possible
+ * Si L1 == NULL avant L2 -> |L1| < |L2|
+ * Sinon, |L1| >= |L2|
+ */
 
-    if (L2->suite == NULL) {
-        return 0;
-    }
-    return PlusCourteRec(L1->suite,L2->suite); 
-    */
-    
+bool PlusCourteRec (Liste L1, Liste L2){
     if (L1 && L2) {
         return PlusCourteRec(L1->suite, L2->suite);
     }
     return (!L1 && L2);
 }
 
-
-/*******/
+/********************************************/
   
 bool PlusCourteIter (Liste L1, Liste L2){
-    
-    /*
-     * Same problem as above: L1 or L2 may be NULL -> cant access L->suite
-    Liste lu = L1;
-    Liste ld = L2;
-    while(lu->suite !=NULL && ld->suite != NULL) {
-        lu = lu->suite;
-        ld = ld->suite;
-    }
-    return (lu->suite==NULL && ld->suite!=NULL) ;
-    */
-
     while (L1 && L2) {
         L1 = L1->suite;
         L2 = L2->suite;
     }
     return (!L1 && L2);
 }
-   
-  
+    
 /********************************************/
 /*                                          */
 /*              VerifiekO                   */
 /*                                          */
 /********************************************/
 
+/*
+ *  On profite la variable k pour compter le nombre de 0 
+ *  il nous reste jusqu'a` L, cad:
+ *  Verifiek0(L, k) = Verifiek0(L->suite, k - 1) si L->valeur == 0
+ *                  = Verifiek0(L->suite, k)     si L->valeur != 0
+ *  Cas de base:
+ *          si k < 0 -> false
+ *          si L == NULL (on a parcouru jusqu'a` la fin) 
+ *             --> renvoie (k == 0)
+ */
 bool VerifiekORec (Liste L, int k) {
-    
-    /*
-     * Comment: fails this test:
-     *    int tab3[] = {1, 2, 3, 4, 5};
-          Liste l3 = build_list(tab3, 5);
-          assert(VerifiekORec(l3, 0) == 1); <--
-     *
-     *
-    if (L->suite == NULL) {
-        return (k == 1);
-    }
-    if (k<0) {
-        return 0;
-    }
-    if (L->valeur == 0) {
-        return (VerifiekORec(L->suite,k-1));
-    }
-    return VerifiekORec(L->suite,k);
-
-    */
-
     if (L) {
         if (L->valeur == 0) return VerifiekORec(L->suite, k-1);
         else return VerifiekORec(L->suite, k);
@@ -336,24 +275,9 @@ bool VerifiekORec (Liste L, int k) {
     return (!L && k == 0); 
 }
    
-/*******/
+/********************************************************************/
 
 bool VerifiekOIter (Liste L, int k) {
-/*  Comment: the same. if L == NULL then cooked   
- *  Liste temp = L;
-    int count = 0;
-    while(count<=k && temp->suite!=NULL){
-        if (temp->valeur == 0) {
-            count++;
-        }
-        temp = temp->suite;
-    }
-    if (temp->valeur == 0) {
-    count++;
-    }
-    return  (count == k); 
-*/
-
     while (L) {
         k -= (L->valeur == 0);
         if (k < 0) return false;
@@ -365,30 +289,18 @@ bool VerifiekOIter (Liste L, int k) {
 
 /********************************************/
 /*                                          */
-/*     NombreTermesAvantZero                */
+/*         NombreTermesAvantZero            */
 /*                                          */
 /********************************************/
 
-int NTAZ_It (Liste L) {
-    /*
-     *    Comment: fail at test 1
-     *    int tab1[] = {3, 2, 9, 5, 0, 6, 0};
-          Liste l1 = build_list(tab1, 7);
-          assert(NTAZ_It(l1) == 4); <---------
-    */
-    /*
-    int count = 0;
+/*
+ *  C'est plutot evident iterativement:
+ *  On parcourt jusqu'a` ce que l'on rencontre le 1er 0
+ *  -> renvoie tout suite la position
+ *
+ */
 
-    while(copy->suite!=NULL && copy->suite->valeur!=0) {
-        count++;
-        copy =copy->suite;
-    }
-    if (copy->suite == NULL) {
-        return count+1;
-    }
-    return count;
-    */
-    
+int NTAZ_It (Liste L) {    
     int cnt = 0;
     while (L) {
         if (L->valeur == 0) return cnt;
@@ -398,24 +310,36 @@ int NTAZ_It (Liste L) {
     return cnt;
 }
 
-/*******/
+/********************************************************************/
+/*
+ *  La formule de recursion:
+ *  if (L != NULL):
+ *                  NTAZ(L) = 1 + NTAZ(L->suite) si L->valeur != 0    
+ *                  NTAZ(L) = 0                  si L->valeur == 0  --> Cas de base
+ *  else:
+ *                  NTAZ(L) = 0                                     --> Cas de base
+ */         
 
-int NTAZ_Rec (Liste L) {
-    /* Comment : also fail the same test as in NTAZ_It
-     *
-    if (L->suite == NULL) {
-        return (!L->valeur == 0); // -> either L->valeur == 0 or !L->valeur
-    }
-    if (L->valeur != 0) {
-        return (NTAZ_Rec(L->suite))+1;
-    }
-    */
-   
+int NTAZ_Rec (Liste L) {   
     if (!L || (L && L->valeur == 0)) return 0;
     return 1 + NTAZ_Rec(L->suite);
 }
 
-/*******/
+/********************************************************************/
+/*
+ *  Pour d'etre recursif terminal, on stocke le resultat dans 
+ *  une valeur qui est passe' en argument et on la renvoie en cas de base
+ *  Donc on reecrit la formule:
+ *  if (L != NULL):
+ *                  NTAZ(L, cnt) = NTAZ(L->suite, cnt + 1) si L->valeur != 0    
+ *                  NTAZ(L, cnt) = cnt                     si L->valeur == 0 --> Cas de base
+ *  else:       
+ *                  NTAZ(L, cnt) = cnt                                       --> Cas de base
+ *  
+ *  On commence par NTAZ(L, 0) ou L est la liste d'origine
+ *
+ */  
+
 int NTAZ_RTSF_aux(Liste L, int cnt) {
     if (!L || (L && L->valeur == 0)) return cnt;
     return NTAZ_RTSF_aux(L->suite, cnt + 1);
@@ -423,11 +347,16 @@ int NTAZ_RTSF_aux(Liste L, int cnt) {
 }
 
 int NTAZ_RTSF (Liste L) { 
-    int cnt = 0;
     return NTAZ_RTSF_aux(L, 0);
 }
 
-/*******/
+/********************************************************************/
+
+/*
+ * Car on ne peut pas renvoyer le resultat, on met a jour le resultat
+ * directment via un pointeur d'un entier 
+ */
+
 void NTAZ_RTSP_aux(Liste L, int* cnt) {
     if (!L || (L && L->valeur == 0)) return;
     (*cnt)++;
@@ -447,6 +376,15 @@ int NTAZ_RTSP (Liste L) {
 /*                                          */
 /********************************************/
 
+/*
+ * Car on a besoin de savoir a chaque etape (L),
+ * quelle est la position courante donc on definit 
+ * une procedure auxiliaire qui peut prendre en plus.
+ *
+ * Donc, c'est juste d'etre prudent en enlever des 
+ * elements avec double pointer si l'element courant == pos
+ * ( si on enelve un element, faut pas avancer L encore)
+ */
 void TuePosRec_aux(Liste *L, int pos) {
     if (*L && (*L)->valeur == pos) {
         Liste tmp = *L;
@@ -464,6 +402,7 @@ void TuePosRec (Liste * L) {
     TuePosRec_aux(L, 1);
 }
 
+/********************************************************************/
 
 void TuePosIt (Liste * L) {
     int pos = 1;
@@ -485,6 +424,17 @@ void TuePosIt (Liste * L) {
 /*            TueRetroPos                   */
 /*                                          */
 /********************************************/
+
+/*
+ * L'atuce est inspire par question 11. Pif(l) du TD2.
+ * 
+ * On maintien un pointer posBack 
+ * (moralement c'est une variable "globale" pour cette fonction)
+ * Tant que L n'est pas a la fin, on avance par un appel
+ * Et apres, lorsqu'on depile, on augmente posBack -> la position courant depuis la fin
+ * Donc, si la valeur d'element == posBack -> l'enleve 
+ *
+ */
 void TueRetroPos_aux(Liste* L, int* posBack) {
     if (*L) {
         TueRetroPos_aux(&((*L)->suite), posBack);
@@ -503,46 +453,14 @@ void TueRetroPos (Liste * L) {
     TueRetroPos_aux(L, &posBack);
 }
 
-/*************************************************/
-/*                                               */
-/*           Main                                */
-/*                                               */
-/*************************************************/
-
-
-
-/*****************************/
-/*                           */
-/*   UnPlusDeuxEgalTrois     */
-/*                           */
-/*****************************/
+/**********************************************************/
+/*                                                        */
+/*               Suite de tests automatiques              */
+/*                                                        */
+/**********************************************************/
 #include <assert.h>
 
-
-// NOTE to Nael: Simple is less. Less is good 
-//               We dont need Liste* , just Liste
-/*
- * “An idiot admires complexity, a genius admires simplicity, 
- * a physicist tries to make it simple, 
- * for an idiot anything the more complicated it is the more he will admire it, 
- * if you make something so clusterfucked he can't understand it 
- * he's gonna think you're a god cause you made it so complicated nobody can understand it. 
- * That's how they write journals in Academics, 
- * they try to make it so complicated people think you're a genius”
-                                                            ― Terry Davis, Creator of Temple OS - my goat
-
-#define build_list(tab) tab2list_aux(tab,sizeof(tab)/sizeof(int))
-
-Liste * build_list_aux(int tab[], int size) {
-    Liste * l = malloc(sizeof(Bloc));
-    *l = NULL;  // <!>
-    for (int i = size-1;i>-1;i--) {
-        empile(tab[i],l);
-    }
-    return l;
-} 
-*/
-
+/* helper functions pour faire des tests */
 Liste build_list(int arr[], int n) {
     Liste l = NULL;
     for (int i = n - 1; i >= 0; i--) {
@@ -550,52 +468,66 @@ Liste build_list(int arr[], int n) {
     } 
     return l;
 }
+bool check_equals(Liste l, int arr[], int n) {
+    int i = 0;
+    while (l) {
+        if (l->valeur != arr[i]) return false;
+        l = l->suite;
+        i++;
+    }
+    return (i == n && !l);
+}
+/**********************************************************/
+/*                                                        */
+/*               TEST UnPlusDeuxEgalTrois                 */
+/*                                                        */
+/**********************************************************/
 
-void test_UnPlusDeuxEgalTrois() {
+void test_UnPlusDeuxEgalTrois(void) {
     printf("Testing UnPlusDeuxEgalTrois...\n");
     
-    // Test 1: Standard case - third equals sum of first two
+    // Test 1
     int tab1[] = {23, 19, 42, 4, 2};
     Liste l1 = build_list(tab1, 5);
     assert(UnPlusDeuxEgalTrois(l1) == 1);
     VideListe(&l1);
 
-    // Test 2: Two elements only (third is implicit 0)
+    // Test 2
     int tab2[] = {2, -2};
     Liste l2 = build_list(tab2, 2);
-    assert(UnPlusDeuxEgalTrois(l2) == 1);  // 2 + (-2) = 0 (implicit)
+    assert(UnPlusDeuxEgalTrois(l2) == 1);  // 2 + -2 = 0
     VideListe(&l2);
 
-    // Test 3: False case
+    // Test 3
     int tab3[] = {2, 3, 27, 1};
     Liste l3 = build_list(tab3, 4);
     assert(UnPlusDeuxEgalTrois(l3) == 0);  // 2 + 3 != 27
     VideListe(&l3);
    
 
-    // Test 4: One element only (second and third are implicit 0)
+    // Test 4
     int tab4[] = {2};
     Liste l4 = build_list(tab4, 1);
     assert(UnPlusDeuxEgalTrois(l4) == 0);  // 2 + 0 != 0
     VideListe(&l4);
     
-    // Test 5: Empty list (all three are implicit 0)
+    // Test 5: Liste vide
     Liste l5 = NULL;
     assert(UnPlusDeuxEgalTrois(l5) == 1);  // 0 + 0 = 0
     
-    // Test 6: Exactly three elements - true
+    // Test 6: Exactement 3 elements
     int tab6[] = {5, 7, 12};
     Liste l6 = build_list(tab6, 3);
     assert(UnPlusDeuxEgalTrois(l6) == 1);
     VideListe(&l6);
     
-    // Test 7: Negative numbers
+    // Test 7: Entiers negatifs
     int tab7[] = {-10, 5, -5};
     Liste l7 = build_list(tab7, 3);
     assert(UnPlusDeuxEgalTrois(l7) == 1);  // -10 + 5 = -5
     VideListe(&l7);
     
-    // Test 8: Zero in first two positions
+    // Test 8
     int tab8[] = {0, 0, 0, 5};
     Liste l8 = build_list(tab8, 4);
     assert(UnPlusDeuxEgalTrois(l8) == 1);  // 0 + 0 = 0
@@ -604,16 +536,16 @@ void test_UnPlusDeuxEgalTrois() {
     printf("UnPlusDeuxEgalTrois tests passed!\n\n");
 }
 
-/*****************************/
-/*                           */
-/*      PlusCourte           */
-/*                           */
-/*****************************/
+/**********************************************************/
+/*                                                        */
+/*                  TEST PlusCourte                       */
+/*                                                        */
+/**********************************************************/
 
-void test_PlusCourte() {
+void test_PlusCourte(void) {
     printf("Testing PlusCourte...\n");
     
-    // Test 1: First strictly shorter
+    // Test 1: |l1| < |l2|
     int tab1[] = {1, 2};
     int tab2[] = {1, 2, 3, 4};
     Liste l1 = build_list(tab1, 2);
@@ -622,7 +554,7 @@ void test_PlusCourte() {
     assert(PlusCourteIter(l1, l2) == 1);
     VideListe(&l1); VideListe(&l2);
  
-    // Test 2: Same length
+    // Test 2: |l1| = |l2|
     int tab3[] = {1, 2, 3};
     int tab4[] = {4, 5, 6};
     Liste l3 = build_list(tab3, 3);
@@ -631,7 +563,7 @@ void test_PlusCourte() {
     assert(PlusCourteIter(l3, l4) == 0);
     VideListe(&l3); VideListe(&l4);
     
-    // Test 3: First longer
+    // Test 3: |l1| > |l2|
     int tab5[] = {1, 2, 3, 4, 5};
     int tab6[] = {1, 2};
     Liste l5 = build_list(tab5, 5);
@@ -640,7 +572,7 @@ void test_PlusCourte() {
     assert(PlusCourteIter(l5, l6) == 0);
     VideListe(&l5); VideListe(&l6);
     
-    // Test 4: First empty, second not
+    // Test 4: |l1| = 0, |l2| > 0
     Liste l7 = NULL;
     int tab8[] = {1};
     Liste l8 = build_list(tab8, 1);
@@ -648,13 +580,13 @@ void test_PlusCourte() {
     assert(PlusCourteIter(l7, l8) == 1);
     VideListe(&l8);
     
-    // Test 5: Both empty
+    // Test 5: |l1| = |l2| = 0
     Liste l9 = NULL;
     Liste l10 = NULL;
     assert(PlusCourteRec(l9, l10) == 0);
     assert(PlusCourteIter(l9, l10) == 0);
     
-    // Test 6: First not empty, second empty
+    // Test 6: |l1| > 0, |l2| = 0
     int tab11[] = {1};
     Liste l11 = build_list(tab11, 1);
     Liste l12 = NULL;
@@ -662,7 +594,7 @@ void test_PlusCourte() {
     assert(PlusCourteIter(l11, l12) == 0);
     VideListe(&l11);
     
-    // Test 7: Very short vs very long (efficiency test)
+    // Test 7: |l1| << |l2|
     int tab13[] = {1};
     int tab14[] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
     Liste l13 = build_list(tab13, 1);
@@ -674,68 +606,68 @@ void test_PlusCourte() {
     printf("PlusCourte tests passed!\n\n");
 }
 
-/*****************************/
-/*                           */
-/*      VerifiekO            */
-/*                           */
-/*****************************/
+/**********************************************************/
+/*                                                        */
+/*                     TEST Verifiek0                     */
+/*                                                        */
+/**********************************************************/
 
-void test_VerifiekO() {
+void test_VerifiekO(void) {
     printf("Testing VerifiekO...\n");
     
-    // Test 1: Exact count matches
+    // Test 1
     int tab1[] = {2, 0, 0, 7, 0, 6, 2, 4, 0};
     Liste l1 = build_list(tab1, 9);
     assert(VerifiekORec(l1, 4) == 1);
     assert(VerifiekOIter(l1, 4) == 1);
     VideListe(&l1);
     
-    // Test 2: Count doesn't match (early exit possible)
+    // Test 2
     int tab2[] = {2, 0, 0, 7, 0, 6, 2, 4, 0};
     Liste l2 = build_list(tab2, 9);
     assert(VerifiekORec(l2, 1) == 0);
     assert(VerifiekOIter(l2, 1) == 0);
     VideListe(&l2);
     
-    // Test 3: No zeros, k=0
+    // Test 3
     int tab3[] = {1, 2, 3, 4, 5};
     Liste l3 = build_list(tab3, 5);
     assert(VerifiekORec(l3, 0) == 1);
     assert(VerifiekOIter(l3, 0) == 1);
     VideListe(&l3);
     
-    // Test 4: No zeros, k>0
+    // Test 4
     int tab4[] = {1, 2, 3, 4, 5};
     Liste l4 = build_list(tab4, 5);
     assert(VerifiekORec(l4, 1) == 0);
     assert(VerifiekOIter(l4, 1) == 0);
     VideListe(&l4);
     
-    // Test 5: All zeros
+    // Test 5
     int tab5[] = {0, 0, 0, 0};
     Liste l5 = build_list(tab5, 4);
     assert(VerifiekORec(l5, 4) == 1);
     assert(VerifiekOIter(l5, 4) == 1);
     VideListe(&l5);
     
-    // Test 6: Empty list, k=0
+    // Test 6
     Liste l6 = NULL;
     assert(VerifiekORec(l6, 0) == 1);
     assert(VerifiekOIter(l6, 0) == 1);
     
-    // Test 7: Empty list, k>0
+    // Test 7
     Liste l7 = NULL;
     assert(VerifiekORec(l7, 1) == 0);
     assert(VerifiekOIter(l7, 1) == 0);
     
-    // Test 8: Single zero
+    // Test 8
     int tab8[] = {0};
     Liste l8 = build_list(tab8, 1);
     assert(VerifiekORec(l8, 1) == 1);
     assert(VerifiekOIter(l8, 1) == 1);
     VideListe(&l8);
     
-    // Test 9: k too large (early exit)
+    // Test 9
     int tab9[] = {0, 1, 2};
     Liste l9 = build_list(tab9, 3);
     assert(VerifiekORec(l9, 5) == 0);
@@ -745,16 +677,16 @@ void test_VerifiekO() {
     printf("VerifiekO tests passed!\n\n");
 }
 
-/*****************************/
-/*                           */
-/* NombreTermesAvantZero     */
-/*                           */
-/*****************************/
+/********************************************************/
+/*                                                      */
+/*                TEST NombreTermesAvantZero            */
+/*                                                      */
+/********************************************************/
  
-void test_NombreTermesAvantZero() {
+void test_NombreTermesAvantZero(void) {
     printf("Testing NombreTermesAvantZero...\n");
     
-    // Test 1: Zero in middle
+    // Test 1: Zero au milieu 
     int tab1[] = {3, 2, 9, 5, 0, 6, 0};
     Liste l1 = build_list(tab1, 7);
     assert(NTAZ_It(l1) == 4);
@@ -763,7 +695,7 @@ void test_NombreTermesAvantZero() {
     assert(NTAZ_RTSP(l1) == 4);
     VideListe(&l1);
     
-    // Test 2: No zero (implicit at end)
+    // Test 2: Pas de zero
     int tab2[] = {3, 2, 9, 5};
     Liste l2 = build_list(tab2, 4);
     assert(NTAZ_It(l2) == 4);
@@ -772,7 +704,7 @@ void test_NombreTermesAvantZero() {
     assert(NTAZ_RTSP(l2) == 4);
     VideListe(&l2);
 
-    // Test 3: Zero at beginning
+    // Test 3: Zero au debut
     int tab3[] = {0, 1, 2, 3};
     Liste l3 = build_list(tab3, 4);
     assert(NTAZ_It(l3) == 0);
@@ -781,14 +713,14 @@ void test_NombreTermesAvantZero() {
     assert(NTAZ_RTSP(l3) == 0);
     VideListe(&l3);
     
-    // Test 4: Empty list (implicit zero)
+    // Test 4: Vide
     Liste l4 = NULL;
     assert(NTAZ_It(l4) == 0);
     assert(NTAZ_Rec(l4) == 0);
     assert(NTAZ_RTSF(l4) == 0);
     assert(NTAZ_RTSP(l4) == 0);
     
-    // Test 5: Single element, not zero
+    // Test 5: Un seul element
     int tab5[] = {42};
     Liste l5 = build_list(tab5, 1);
     assert(NTAZ_It(l5) == 1);
@@ -797,7 +729,7 @@ void test_NombreTermesAvantZero() {
     assert(NTAZ_RTSP(l5) == 1);
     VideListe(&l5);
     
-    // Test 6: Single element, is zero
+    // Test 6: Un seul element qui est zero
     int tab6[] = {0};
     Liste l6 = build_list(tab6, 1);
     assert(NTAZ_It(l6) == 0);
@@ -806,7 +738,7 @@ void test_NombreTermesAvantZero() {
     assert(NTAZ_RTSP(l6) == 0);
     VideListe(&l6);
     
-    // Test 7: Multiple zeros, count before first
+    // Test 7
     int tab7[] = {1, 2, 3, 0, 4, 0, 5};
     Liste l7 = build_list(tab7, 7);
     assert(NTAZ_It(l7) == 3);
@@ -815,7 +747,7 @@ void test_NombreTermesAvantZero() {
     assert(NTAZ_RTSP(l7) == 3);
     VideListe(&l7);
     
-    // Test 8: All zeros
+    // Test 8
     int tab8[] = {0, 0, 0};
     Liste l8 = build_list(tab8, 3);
     assert(NTAZ_It(l8) == 0);
@@ -827,191 +759,150 @@ void test_NombreTermesAvantZero() {
     printf("NombreTermesAvantZero tests passed!\n\n");
 }
 
-/*****************************/
-/*                           */
-/*        TuePos             */
-/*                           */
-/*****************************/
+/********************************************************/
+/*                                                      */
+/*                      TEST TuePos                     */
+/*                                                      */
+/********************************************************/
 
-void test_TuePos() {
+void test_TuePos(void) {
     printf("Testing TuePos...\n");
     
-    // Test 1: Standard case from specification
+    // Test 1: Cas du consigne TP
     int tab1[] = {0, 4, 3, 9, 5, 0, 9, 2, 1};
     Liste l1 = build_list(tab1, 9);
-    TuePosRec(&l1);
-    // Expected: [0, 4, 9, 0, 9, 2, 1] (removed 3 at pos 3, 5 at pos 5)
-    assert(longueur_iter(l1) == 7);
+    TuePosRec(&l1);     // Faut donner [0, 4, 9, 0, 9, 2, 1]
+    int tab1_[] = {0, 4, 9, 0, 9, 2, 1}; 
+    assert(check_equals(l1, tab1_, 7));
     VideListe(&l1);
-
-    int tab1b[] = {0, 4, 3, 9, 5, 0, 9, 2, 1};
-    Liste l1b = build_list(tab1b, 9);
-    TuePosIt(&l1b);
-    assert(longueur_iter(l1b) == 7);
-    VideListe(&l1b);
     
-    // Test 2: No elements equal to position
+    // Test 2: premier element = pos
     int tab2[] = {1, 0, 0, 0, 0};
     Liste l2 = build_list(tab2, 5);
-    TuePosRec(&l2);
-    assert(longueur_iter(l2) == 4);
+    TuePosRec(&l2);     // Faut donner [0, 0, 0, 0]
+    int tab2_[] = {0, 0, 0, 0}; 
+    assert(check_equals(l2, tab2_, 4));
     VideListe(&l2);
         
-    // Test 3: All elements equal position
+    // Test 3
     int tab3[] = {1, 2, 3, 4, 5};
     Liste l3 = build_list(tab3, 5);
     TuePosRec(&l3);
-    assert(l3 == NULL);  // All removed
+    assert(l3 == NULL);  // Tout enleve'
     
-    int tab3b[] = {1, 2, 3, 4, 5};
-    Liste l3b = build_list(tab3b, 5);
-    TuePosIt(&l3b);
-    assert(l3b == NULL);
-    
-    // Test 4: Empty list
+    // Test 4: Liste vide
     Liste l4 = NULL;
     TuePosRec(&l4);
     assert(l4 == NULL);
     
-    Liste l4b = NULL;
-    TuePosIt(&l4b);
-    assert(l4b == NULL);
-    
-    // Test 5: Single element - position 1, value 1
+    // Test 5: Un seul element 1
     int tab5[] = {1};
     Liste l5 = build_list(tab5, 1);
     TuePosRec(&l5);
-    assert(l5 == NULL);  // Removed
+    assert(l5 == NULL);  
 
-    int tab5b[] = {1};
-    Liste l5b = build_list(tab5b, 1);
-    TuePosIt(&l5b);
-    assert(l5b == NULL);
-
-    // Test 6: Single element - position 1, value not 1
+    // Test 6: Un seul element != 1
     int tab6[] = {5};
     Liste l6 = build_list(tab6, 1);
-    TuePosRec(&l6);
-    assert(longueur_iter(l6) == 1);
+    TuePosRec(&l6);     // Faut donner [5]
+    assert(check_equals(l6, tab6, 1));
     VideListe(&l6);
-    
-    
-    // Test 7: First element matches (position 1, value 1)
-    int tab7[] = {1, 5, 6, 7};
+     
+    // Test 7
+    int tab7[] = {1, 5, 3, 7};
     Liste l7 = build_list(tab7, 4);
-    TuePosRec(&l7);
-    assert(longueur_iter(l7) == 3);
+    TuePosRec(&l7);     // Faut donner [5, 7]
+    int tab7_[] = { 5, 7};
+    assert(check_equals(l7, tab7_, 2));
     VideListe(&l7);
-    
-    int tab7b[] = {1, 5, 6, 7};
-    Liste l7b = build_list(tab7b, 4);
-    TuePosIt(&l7b);
-    assert(longueur_iter(l7b) == 3);
-    VideListe(&l7b);
     
     printf("TuePos tests passed!\n\n");
 }
 
-/*****************************/
-/*                           */
-/*     TueRetroPos           */
-/*                           */
-/*****************************/
+/********************************************************/
+/*                                                      */
+/*                   TEST TueRetroPos                   */
+/*                                                      */
+/********************************************************/
 
-void test_TueRetroPos() {
+void test_TueRetroPos(void) {
     printf("Testing TueRetroPos...\n");
     
-    // Test 1: Standard case from specification
+    // Test 1: Cas du consigne
     int tab1[] = {0, 4, 3, 9, 5, 0, 9, 2, 1};
     Liste l1 = build_list(tab1, 9);
-    TueRetroPos(&l1);
-    // Expected: [0, 4, 3, 9, 0, 9] (removed 5 at retro-pos 5, 2 at retro-pos 2, 1 at retro-pos 1)
-    assert(longueur_iter(l1) == 6);
+    TueRetroPos(&l1); // Faut donner [0, 4, 3, 9, 0, 9]
+    int tab1_[] = {0, 4, 3, 9, 0, 9};
+    assert(check_equals(l1, tab1_, 6));
     VideListe(&l1);
     
-    // Test 2: 1 element equal retro-position
+    // Test 2:
     int tab2[] = {5, 5, 5, 5, 5};
     Liste l2 = build_list(tab2, 5);
-    int len_before = longueur_iter(l2);
-    TueRetroPos(&l2);
-    assert(longueur_iter(l2) == len_before - 1);
+    TueRetroPos(&l2); // Faut donner [5, 5, 5, 5]
+    int tab2_[] = {5, 5, 5, 5};
+    assert(check_equals(l2, tab2_, 4));
     VideListe(&l2);
     
-    // Test 3: All elements equal retro-position
+    // Test 3
     int tab3[] = {5, 4, 3, 2, 1};
     Liste l3 = build_list(tab3, 5);
     TueRetroPos(&l3);
-    assert(l3 == NULL);  // All removed
+    assert(l3 == NULL);  // Tout enleve'
     
-    // Test 4: Empty list
+    // Test 4
     Liste l4 = NULL;
     TueRetroPos(&l4);
     assert(l4 == NULL);
     
-    // Test 5: Single element (retro-pos 1, value 1)
+    // Test 5
     int tab5[] = {1};
     Liste l5 = build_list(tab5, 1);
     TueRetroPos(&l5);
-    assert(l5 == NULL);  // Removed
+    assert(l5 == NULL);  
     
-    // Test 6: Single element (retro-pos 1, value not 1)
+    // Test 6
     int tab6[] = {5};
     Liste l6 = build_list(tab6, 1);
-    TueRetroPos(&l6);
-    assert(longueur_iter(l6) == 1);
+    TueRetroPos(&l6); // Faut donner [5]
+    int tab6_[] = {5};
+    assert(check_equals(l6, tab6_, 1));
     VideListe(&l6);
     
-    // Test 7: Last element matches retro-position 1
+    // Test 7
     int tab7[] = {5, 6, 7, 1};
     Liste l7 = build_list(tab7, 4);
-    TueRetroPos(&l7);
-    assert(longueur_iter(l7) == 3);
+    TueRetroPos(&l7);   // Faut donner [5, 6, 7]
+    int tab7_[] = {5, 6, 7};
+    assert(check_equals(l7, tab7_, 3));    
     VideListe(&l7);
     
     // Test 8: Two elements
     int tab8[] = {2, 1};
     Liste l8 = build_list(tab8, 2);
     TueRetroPos(&l8);
-    assert(l8 == NULL);  // Both removed
+    assert(l8 == NULL); 
     
-    // Test 9: Two elements - none match
+    // Test 9
     int tab9[] = {5, 5};
     Liste l9 = build_list(tab9, 2);
     TueRetroPos(&l9);
-    assert(longueur_iter(l9) == 2);
+    assert(check_equals(l9, tab9, 2));
     VideListe(&l9);
     
-    // Test 10: First element matches last retro-position
+    // Test 10
     int tab10[] = {5, 2, 3, 4, 5};
     Liste l10 = build_list(tab10, 5);
-    TueRetroPos(&l10);
-    assert(longueur_iter(l10) == 3);
+    TueRetroPos(&l10);  // Faut donner [2, 4, 5]
+    int tab10_[] = {2, 4, 5};
+    assert(check_equals(l10, tab10_, 3));
     VideListe(&l10);
     
     printf("TueRetroPos tests passed!\n\n");
 }
 
-
-// int main(int argc, char** argv)
-
-int main()
+int main(void)
 {
-/*     Liste l ;
-
-        l = NULL ;
-        VireDernier_rec  (&l) ;
-        VireDernier_iter (&l) ;
-        affiche_rec(l) ; 
-        affiche_iter(l) ; 
-        printf(" %d \n", longueur_iter(l)) ; 
-        printf(" %d \n", longueur_rec(l)) ; 
-        VideListe(&l);
-        return 0; */
-        
-
-    /* temporary tests */
- 
- 
     printf("=================================\n");
     printf("Running Linked List Test Suite\n");
     printf("=================================\n\n");
