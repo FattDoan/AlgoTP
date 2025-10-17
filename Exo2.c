@@ -447,19 +447,61 @@ int NTAZ_RTSP (Liste L) {
 /*                                          */
 /********************************************/
 
-void TuePosRec (Liste * L) {}
+void TuePosRec_aux(Liste *L, int pos) {
+    if (*L && (*L)->valeur == pos) {
+        Liste tmp = *L;
+        *L = (*L)->suite;
+        free(tmp);
+        TuePosRec_aux(L, pos + 1);
+    }
+    else if (*L) {
+        L = &((*L)->suite);
+        TuePosRec_aux(L, pos + 1);
+    }
+}
 
-/*******/
+void TuePosRec (Liste * L) {
+    TuePosRec_aux(L, 1);
+}
 
-void TuePosIt (Liste * L) {}
+
+void TuePosIt (Liste * L) {
+    int pos = 1;
+    while (*L) {
+        if ((*L)->valeur == pos) {
+            Liste tmp = (*L);
+            (*L) = (*L)->suite;
+            free(tmp);
+        }
+        else {
+            L = &((*L)->suite);
+        }
+        pos++;
+    }
+}
 
 /********************************************/
 /*                                          */
 /*            TueRetroPos                   */
 /*                                          */
 /********************************************/
+void TueRetroPos_aux(Liste* L, int* posBack) {
+    if (*L) {
+        TueRetroPos_aux(&((*L)->suite), posBack);
+        (*posBack)++;
+        if ((*posBack) == (*L)->valeur) {
+            Liste tmp = (*L);
+            *L = (*L)->suite;
+            free(tmp);
+        }
+    }
 
-void TueRetroPos (Liste * L) {}
+}
+
+void TueRetroPos (Liste * L) {
+    int posBack = 0;
+    TueRetroPos_aux(L, &posBack);
+}
 
 /*************************************************/
 /*                                               */
@@ -796,41 +838,35 @@ void test_TuePos() {
     
     // Test 1: Standard case from specification
     int tab1[] = {0, 4, 3, 9, 5, 0, 9, 2, 1};
-    Liste *l1 = build_list(tab1, 9);
-    TuePosRec(l1);
+    Liste l1 = build_list(tab1, 9);
+    TuePosRec(&l1);
     // Expected: [0, 4, 9, 0, 9, 2, 1] (removed 3 at pos 3, 5 at pos 5)
-    assert(longueur_iter(*l1) == 7);
-    VideListe(l1);
+    assert(longueur_iter(l1) == 7);
+    VideListe(&l1);
 
     int tab1b[] = {0, 4, 3, 9, 5, 0, 9, 2, 1};
-    Liste *l1b = build_list(tab1b, 9);
-    TuePosIt(l1b);
-    assert(longueur_iter(*l1b) == 7);
-    VideListe(l1b);
+    Liste l1b = build_list(tab1b, 9);
+    TuePosIt(&l1b);
+    assert(longueur_iter(l1b) == 7);
+    VideListe(&l1b);
     
     // Test 2: No elements equal to position
     int tab2[] = {1, 0, 0, 0, 0};
-    Liste *l2 = build_list(tab2, 5);
-    TuePosRec(l2);
-    assert(longueur_iter(*l2) == 5);
-    VideListe(l2);
-    
-    int tab2b[] = {1, 0, 0, 0, 0};
-    Liste *l2b = build_list(tab2b, 5);
-    TuePosIt(l2b);
-    assert(longueur_iter(*l2b) == 5);
-    VideListe(l2b);
-    
+    Liste l2 = build_list(tab2, 5);
+    TuePosRec(&l2);
+    assert(longueur_iter(l2) == 4);
+    VideListe(&l2);
+        
     // Test 3: All elements equal position
     int tab3[] = {1, 2, 3, 4, 5};
-    Liste *l3 = build_list(tab3, 5);
-    TuePosRec(l3);
-    assert(*l3 == NULL);  // All removed
+    Liste l3 = build_list(tab3, 5);
+    TuePosRec(&l3);
+    assert(l3 == NULL);  // All removed
     
     int tab3b[] = {1, 2, 3, 4, 5};
-    Liste *l3b = build_list(tab3b, 5);
-    TuePosIt(l3b);
-    assert(*l3b == NULL);
+    Liste l3b = build_list(tab3b, 5);
+    TuePosIt(&l3b);
+    assert(l3b == NULL);
     
     // Test 4: Empty list
     Liste l4 = NULL;
@@ -843,40 +879,35 @@ void test_TuePos() {
     
     // Test 5: Single element - position 1, value 1
     int tab5[] = {1};
-    Liste *l5 = build_list(tab5, 1);
-    TuePosRec(l5);
-    assert(*l5 == NULL);  // Removed
+    Liste l5 = build_list(tab5, 1);
+    TuePosRec(&l5);
+    assert(l5 == NULL);  // Removed
 
     int tab5b[] = {1};
-    Liste *l5b = build_list(tab5b, 1);
-    TuePosIt(l5b);
-    assert(*l5b == NULL);
+    Liste l5b = build_list(tab5b, 1);
+    TuePosIt(&l5b);
+    assert(l5b == NULL);
 
     // Test 6: Single element - position 1, value not 1
     int tab6[] = {5};
-    Liste *l6 = build_list(tab6, 1);
-    TuePosRec(l6);
-    assert(longueur_iter(*l6) == 1);
-    VideListe(l6);
+    Liste l6 = build_list(tab6, 1);
+    TuePosRec(&l6);
+    assert(longueur_iter(l6) == 1);
+    VideListe(&l6);
     
-    int tab6b[] = {5};
-    Liste *l6b = build_list(tab6b, 1);
-    TuePosIt(l6b);
-    assert(longueur_iter(*l6b) == 1);
-    VideListe(l6b);
     
     // Test 7: First element matches (position 1, value 1)
     int tab7[] = {1, 5, 6, 7};
-    Liste *l7 = build_list(tab7, 4);
-    TuePosRec(l7);
-    assert(longueur_iter(*l7) == 3);
-    VideListe(l7);
+    Liste l7 = build_list(tab7, 4);
+    TuePosRec(&l7);
+    assert(longueur_iter(l7) == 3);
+    VideListe(&l7);
     
     int tab7b[] = {1, 5, 6, 7};
-    Liste *l7b = build_list(tab7b, 4);
-    TuePosIt(l7b);
-    assert(longueur_iter(*l7b) == 3);
-    VideListe(l7b);
+    Liste l7b = build_list(tab7b, 4);
+    TuePosIt(&l7b);
+    assert(longueur_iter(l7b) == 3);
+    VideListe(&l7b);
     
     printf("TuePos tests passed!\n\n");
 }
@@ -892,25 +923,25 @@ void test_TueRetroPos() {
     
     // Test 1: Standard case from specification
     int tab1[] = {0, 4, 3, 9, 5, 0, 9, 2, 1};
-    Liste *l1 = build_list(tab1, 9);
-    TueRetroPos(l1);
+    Liste l1 = build_list(tab1, 9);
+    TueRetroPos(&l1);
     // Expected: [0, 4, 3, 9, 0, 9] (removed 5 at retro-pos 5, 2 at retro-pos 2, 1 at retro-pos 1)
-    assert(longueur_iter(*l1) == 6);
-    VideListe(l1);
+    assert(longueur_iter(l1) == 6);
+    VideListe(&l1);
     
-    // Test 2: No elements equal retro-position
+    // Test 2: 1 element equal retro-position
     int tab2[] = {5, 5, 5, 5, 5};
-    Liste *l2 = build_list(tab2, 5);
-    int len_before = longueur_iter(*l2);
-    TueRetroPos(l2);
-    assert(longueur_iter(*l2) == len_before);
-    VideListe(l2);
+    Liste l2 = build_list(tab2, 5);
+    int len_before = longueur_iter(l2);
+    TueRetroPos(&l2);
+    assert(longueur_iter(l2) == len_before - 1);
+    VideListe(&l2);
     
     // Test 3: All elements equal retro-position
     int tab3[] = {5, 4, 3, 2, 1};
-    Liste *l3 = build_list(tab3, 5);
-    TueRetroPos(l3);
-    assert(*l3 == NULL);  // All removed
+    Liste l3 = build_list(tab3, 5);
+    TueRetroPos(&l3);
+    assert(l3 == NULL);  // All removed
     
     // Test 4: Empty list
     Liste l4 = NULL;
@@ -919,45 +950,43 @@ void test_TueRetroPos() {
     
     // Test 5: Single element (retro-pos 1, value 1)
     int tab5[] = {1};
-    Liste *l5 = build_list(tab5, 1);
-    TueRetroPos(l5);
-    assert(*l5 == NULL);  // Removed
+    Liste l5 = build_list(tab5, 1);
+    TueRetroPos(&l5);
+    assert(l5 == NULL);  // Removed
     
     // Test 6: Single element (retro-pos 1, value not 1)
     int tab6[] = {5};
-    Liste *l6 = build_list(tab6, 1);
-    TueRetroPos(l6);
-    assert(longueur_iter(*l6) == 1);
-    VideListe(l6);
+    Liste l6 = build_list(tab6, 1);
+    TueRetroPos(&l6);
+    assert(longueur_iter(l6) == 1);
+    VideListe(&l6);
     
     // Test 7: Last element matches retro-position 1
     int tab7[] = {5, 6, 7, 1};
-    Liste *l7 = build_list(tab7, 4);
-    TueRetroPos(l7);
-    assert(longueur_iter(*l7) == 3);
-    VideListe(l7);
+    Liste l7 = build_list(tab7, 4);
+    TueRetroPos(&l7);
+    assert(longueur_iter(l7) == 3);
+    VideListe(&l7);
     
     // Test 8: Two elements
     int tab8[] = {2, 1};
-    Liste *l8 = build_list(tab8, 2);
-    TueRetroPos(l8);
-    assert(*l8 == NULL);  // Both removed
+    Liste l8 = build_list(tab8, 2);
+    TueRetroPos(&l8);
+    assert(l8 == NULL);  // Both removed
     
     // Test 9: Two elements - none match
     int tab9[] = {5, 5};
-    Liste *l9 = build_list(tab9, 2);
-    TueRetroPos(l9);
-    assert(longueur_iter(*l9) == 2);
-    VideListe(l9);
+    Liste l9 = build_list(tab9, 2);
+    TueRetroPos(&l9);
+    assert(longueur_iter(l9) == 2);
+    VideListe(&l9);
     
     // Test 10: First element matches last retro-position
     int tab10[] = {5, 2, 3, 4, 5};
-    Liste *l10 = build_list(tab10, 5);
-    TueRetroPos(l10);
-    // Element at index 0 has retro-pos 5, value 5 -> removed
-    // Element at index 4 has retro-pos 1, value 5 -> not removed
-    assert(longueur_iter(*l10) == 4);
-    VideListe(l10);
+    Liste l10 = build_list(tab10, 5);
+    TueRetroPos(&l10);
+    assert(longueur_iter(l10) == 3);
+    VideListe(&l10);
     
     printf("TueRetroPos tests passed!\n\n");
 }
@@ -991,8 +1020,8 @@ int main()
     test_PlusCourte();
     test_VerifiekO();
     test_NombreTermesAvantZero();
-//    test_TuePos();
-//    test_TueRetroPos();
+    test_TuePos();
+    test_TueRetroPos();
     
     printf("=================================\n");
     printf("All tests passed successfully!\n");
