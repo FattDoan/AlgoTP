@@ -25,8 +25,7 @@
 /*                                               */
 /*************************************************/
 
-typedef enum {false, true} bool;    // si on precise pas -std=c99
-                                    // certains compilateurs peuvent se plaindre
+typedef enum {false, true} bool;    // NOTE: gcc peut se plaindre si on inclut pas -std=c99
 
 /*************************************************/
 /*                                               */
@@ -204,7 +203,7 @@ void VideListe(Liste *L)
 /********************************************/
 
 /*
- *  On ajoute L->valeur à sum aussi longtemps que possible (jusqu'à ce que cnt == 2 ou L == NULL)
+ *  On ajoute L->valeur à sum jusqu'à ce que cnt == 2 ou L == NULL si possible
  *  --> de toute facon, si |L| < 2, les nombres manquants sont remplacés par des zéros, conformément à 
  *  l'énoncé.
  *  Après la boucle while,
@@ -232,7 +231,7 @@ bool UnPlusDeuxEgalTrois (Liste L) {
 
 
 /*
- * On parcourt L1 et L2 en même temps aussi longtemps que possible
+ * On parcourt les 2 listes L1 et L2 en même temps
  * Si L1 == NULL avant L2, alors |L1| < |L2|
  * Sinon, |L1| >= |L2|
  */
@@ -262,12 +261,17 @@ bool PlusCourteIter (Liste L1, Liste L2){
 
 /*
  *  On utilise la variable k pour compter le nombre de 0 
- *  qu'il nous reste jusqu'au dernier 0, cad:
+ *  que il faut on doit encore renconter (si on voit un 0, on diminue k). 
+ *  Notre objectif est que k soit exactement égal à 0 quand L == NULL
+ *  (cad on a vu exactment k 0s pendant le parcours).
+ *
+ *  La formule de récursion est donc:
+ *
  *  Verifiek0(L, k) = Verifiek0(L->suite, k - 1) si L->valeur == 0
  *                  = Verifiek0(L->suite, k)     si L->valeur != 0
  *  Cas de base:
- *          si k < 0 -> false
- *          si L == NULL (on a parcouru jusqu'a` la fin) 
+ *          si k < 0 -> false   (on arrête dès que possible)
+ *          si L == NULL        (on a parcouru jusqu'a` la fin) 
  *             --> renvoie (k == 0)
  */
 
@@ -300,7 +304,7 @@ bool VerifiekOIter (Liste L, int k) {
 
 /*
  *  Le code itératif est assez intuitif.
- *  On parcourt jusqu'à` ce que l'on rencontre le 1er 0
+ *  On parcourt jusqu'à ce que l'on rencontre le 1er 0
  *  -> On renvoie tout de suite la position de ce dernier.
  *
  */
@@ -341,7 +345,7 @@ int NTAZ_Rec (Liste L) {
  *  else:       
  *                  NTAZ(L, cnt) = cnt                                       --> Cas de base
  *  
- *  On commence par NTAZ(L, 0) ou L est la liste d'origine
+ *  On commence par NTAZ(L, 0) où L est la liste d'origine
  *
  */  
 
@@ -387,7 +391,7 @@ int NTAZ_RTSP (Liste L) {
  *
  * Il faut ensuite être prudent lors de la suppression d'un
  * élément avec le pointeur double si l'élément actuel == pos.
- * (lors de la suppression d'un élément, on ne doit pas encore déplacer immédiatement L = &(*L)->suite).
+ * (après la suppression d'un élément, on ne doit pas avancer encore pointeur L).
  */
 void TuePosRec_aux(Liste *L, int pos) {
     if (*L && (*L)->valeur == pos) {
@@ -433,8 +437,8 @@ void TuePosIt (Liste * L) {
  * L'atuce est inspirée par question 11. Pif(l) du TD2.
  * 
  * On maintient un pointer posBack
- * (moralement ce n'est pas une variable "globale" pour cette fonction)
- * Tant que le curseur n'est pas arrivé à la fin de la liste, on avance L par un appel récursif
+ * (moralement c'est une variable "globale" pour cette fonction)
+ * On avance L par un appel récursif pour arriver à la fin de la liste. 
  * Lorsque l'on depile, on augmente posBack -> la position courante en partant de la fin
  * Donc, si l'élement courant a pour valeur posBack, on l'enlève 
  *
