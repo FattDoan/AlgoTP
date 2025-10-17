@@ -258,7 +258,7 @@ bool PlusCourteIter (Liste L1, Liste L2){
 /********************************************/
 
 /*
- *  On profite de la variable k pour compter le nombre de 00
+ *  On profite de la variable k pour compter le nombre de 0 
  *  il nous reste jusqu'a` L, cad:
  *  Verifiek0(L, k) = Verifiek0(L->suite, k - 1) si L->valeur == 0
  *                  = Verifiek0(L->suite, k)     si L->valeur != 0
