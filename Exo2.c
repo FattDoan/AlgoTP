@@ -25,7 +25,8 @@
 /*                                               */
 /*************************************************/
 
-typedef enum {false, true} bool; 
+typedef enum {false, true} bool;    // si on precise pas -std=c99
+                                    // certains compilateurs peuvent se plaindre
 
 /*************************************************/
 /*                                               */
@@ -380,11 +381,11 @@ int NTAZ_RTSP (Liste L) {
 /*
  * Car on a besoin de savoir a chaque etape (L),
  * quelle est la position courante donc on definit 
- * une procedure auxiliaire qui peut prendre en plus.
+ * une procedure auxiliaire qui peut la prendre.
  *
- * Donc, c'est juste d'etre prudent en enlever des 
- * elements avec double pointer si l'element courant == pos
- * ( si on enelve un element, faut pas avancer L encore)
+ * Il nous reste donc d'être prudent lors de la suppression d'un
+ * élément avec le pointeur double si l'élément actuel == pos
+ * (si on supprime un élément, on ne doit pas encore déplacer L = &(*L)->suite).
  */
 void TuePosRec_aux(Liste *L, int pos) {
     if (*L && (*L)->valeur == pos) {
@@ -431,7 +432,7 @@ void TuePosIt (Liste * L) {
  * 
  * On maintien un pointer posBack 
  * (moralement c'est une variable "globale" pour cette fonction)
- * Tant que L n'est pas a la fin, on avance par un appel
+ * Tant que L n'est pas a la fin, on avance L par un appel recursif
  * Et apres, lorsqu'on depile, on augmente posBack -> la position courant depuis la fin
  * Donc, si la valeur d'element == posBack -> l'enleve 
  *
