@@ -1,20 +1,21 @@
-/****************************************************************************************
- *                         RENDU DU TP ALGO : Partie 2                                  *   
- *  Noms du binôme: Thanh Phat DOAN (thanh-phat.doan@universite-paris-saclay.fr)        *
- *                  Naël EL YAZGHI  (nael.el-yazghi@universite-paris-saclay.fr)         *
- *                                                                                      *
- *  Le code est conforme à la norme C99 et a été compilé avec les options               *
- *  les plus strictes: -std=c99 -pedantic -Wall -Wextra -Werror.                        *
- *  Les fuites mémoire ont été vérifiées avec Valgrind (--leak-check=full)              *
- *                                                                                      *
-*****************************************************************************************/
+/**************************************************************************
+ *                     RENDU DU TP ALGO : Partie 2                        *   
+ *  Noms du binôme:                                                       *
+ *  - Thanh Phat DOAN (thanh-phat.doan@universite-paris-saclay.fr)        *
+ *  - Naël EL YAZGHI  (nael.el-yazghi@universite-paris-saclay.fr)         *
+ *                                                                        *               
+ *  Le code est conforme à la norme C99 et a été compilé avec les options *               
+ *  les plus strictes: -std=c99 -pedantic -Wall -Wextra -Werror.          *
+ *  Les fuites mémoire ont été vérifiées avec Valgrind (--leak-check=full)*
+ *                                                                        *
+***************************************************************************/
 
-/* Note *********************************************************************************
- * Nos schémas de nommage et structure de fonctions suivent strictement le fichier      *
- * Algo2.c fourni. Les tests donnés par ce fichier devraient donc marcher sans          *
- * modification                                                                         *
- * (le nommage de fonctions existe une légère différence dans les consignes du TP)      *
- * **************************************************************************************/
+/* Note *******************************************************************
+ * Nos schémas de nommage et structure de fonctions suivent strictement   *
+ * le fichier Algo2.c fourni. Les tests donnés par ce fichier devraient   *
+ * donc marcher sans modification (le nommage de fonctions existe une     *
+ * légère différence dans les consignes du TP)                            *
+ * ************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +26,8 @@
 /*                                               */
 /*************************************************/
 
-typedef enum {false, true} bool;    // NOTE: gcc peut se plaindre si on inclut pas -std=c99
+typedef enum {false, true} bool;    
+// NOTE: gcc peut se plaindre si on inclut pas -std=c99
 
 /*************************************************/
 /*                                               */
@@ -48,23 +50,17 @@ typedef Bloc* Liste;
 /*************************************************/
 
 
-/*** les 5 fonctionnalit�s suivantes sont plus du sucre syntaxique que du code utile  ***/
-/*** sauf � vouloir pouvoir basculer � moindre frais sur une impl�menation des listes ***/
-/**** diff�rentes des listes chain�es propos�es dans le cadre de ce projet            ***/
+/************* Sucre syntaxique ******************/
+/* Ce sont des fonctions données dans le TD */
 
-// Liste Vide() { return NULL ; }
-// void initVide(Liste *L) { *L = NULL ; }
-// bool estVide(Liste l) { return l == NULL ; }
-// int premier(Liste l) { return l->valeur ; }
-// Liste suite(Liste l) { return l->suite ; }
-
-/********************************************************************/
+Liste Vide() { return NULL ; }
+void initVide(Liste *L) { *L = NULL ; }
+bool estVide(Liste l) { return l == NULL ; }
+int premier(Liste l) { return l->valeur ; }
 
 Liste suite(Liste l) {
     return l->suite;
 }
-
-/********************************************************************/
 
 void depile(Liste *L) {   
     Liste tmp = *L ;
@@ -72,16 +68,12 @@ void depile(Liste *L) {
     free(tmp) ;
 }
 
-/********************************************************************/
-
 Liste ajoute(int x, Liste l) {   
     Liste tmp = (Liste) malloc(sizeof(Bloc)) ;
     tmp->valeur = x ;
     tmp->suite = l ;
     return tmp ;
 }
-
-/********************************************************************/
 
 void empile(int x, Liste *L) { 
     *L = ajoute(x,*L) ; 
@@ -146,7 +138,7 @@ int longueur_iter (Liste l)
 
 /*****************************************/
 /*                                       */
-/*                 VireDernier           */
+/*          VireDernier                  */
 /*     avec un depile                    */
 /* � la main opportuniste (version iter) */
 /* ou en utilisant depile (version rec ) */ 
@@ -203,23 +195,28 @@ void VideListe(Liste *L)
 /********************************************/
 
 /*
- *  On ajoute L->valeur à sum jusqu'à ce que cnt == 2 ou L == NULL si possible
- *  --> de toute facon, si |L| < 2, les nombres manquants sont remplacés par des zéros, conformément à 
- *  l'énoncé.
- *  Après la boucle while,
- *  le curseur est sur le 3eme element,  si (L == NULL), cad |L| < 3, on compare avec 0, sinon,
+ *  On ajoute L->valeur et (L->suite)->valeur à sum si possible
+ *  --> de toute facon, si |L| < 2, 
+ *  les nombres manquants sont remplacés par des zéros, 
+ *  conformément à l'énoncé.
+ *  
+ *  A la fin, L est sur le 3eme element,  si (L == NULL), 
+ *  cad |L| < 3, on compare avec 0, sinon,
  *  on compare avec le 3e élément. 
  *
  */
 
 bool UnPlusDeuxEgalTrois (Liste L) { 
-    int cnt = 0, sum = 0;
-    while (L && cnt < 2) {
+    int sum = 0;
+    if (L != NULL) {
         sum += (L->valeur);
-        L = L->suite;
-        cnt++;
+        if (L->suite) {
+            L = L->suite;
+            sum += (L->valeur);
+        }
     }
-    bool ret = (L) ? (sum == L->valeur) : (sum == 0);
+
+    bool ret = (L != NULL) ? (sum == L->valeur) : (sum == 0);
     return ret; 
 }
    
@@ -237,20 +234,20 @@ bool UnPlusDeuxEgalTrois (Liste L) {
  */
 
 bool PlusCourteRec (Liste L1, Liste L2){
-    if (L1 && L2) {
+    if (L1 != NULL && L2 != NULL) {
         return PlusCourteRec(L1->suite, L2->suite);
     }
-    return (!L1 && L2);
+    return (L1 == NULL && L2 != NULL);
 }
 
 /********************************************/
   
 bool PlusCourteIter (Liste L1, Liste L2){
-    while (L1 && L2) {
+    while (L1 != NULL && L2 != NULL) {
         L1 = L1->suite;
         L2 = L2->suite;
     }
-    return (!L1 && L2);
+    return (L1 == NULL && L2 != NULL);
 }
     
 /********************************************/
@@ -276,20 +273,19 @@ bool PlusCourteIter (Liste L1, Liste L2){
  */
 
 bool VerifiekORec (Liste L, int k) {
-    if (L) {
+    if (L != NULL) {
         if (L->valeur == 0) return VerifiekORec(L->suite, k-1);
         else return VerifiekORec(L->suite, k);
     }
     if (k < 0) return false;
-    return (!L && k == 0); 
+    return (L == NULL && k == 0); 
 }
    
 /********************************************************************/
 
 bool VerifiekOIter (Liste L, int k) {
-    while (L) {
+    while (L != NULL && k >= 0) {
         k -= (L->valeur == 0);
-        if (k < 0) return false;
         L = L->suite;
     }
     return (k == 0);
@@ -302,6 +298,7 @@ bool VerifiekOIter (Liste L, int k) {
 /*                                          */
 /********************************************/
 
+/************ Version récursive *************/
 /*
  *  Le code itératif est assez intuitif.
  *  On parcourt jusqu'à ce que l'on rencontre le 1er 0
@@ -311,46 +308,46 @@ bool VerifiekOIter (Liste L, int k) {
 
 int NTAZ_It (Liste L) {    
     int cnt = 0;
-    while (L) {
-        if (L->valeur == 0) return cnt;
+    while (L != NULL && L->valeur != 0) {
         L = L->suite;
         cnt++;
     }
     return cnt;
 }
 
-/********************************************************************/
+/******* Version récursive sans sous-fonctionalité (non terminale) *****/
 /*
  *  Formule de recursion:
  *  if (L != NULL):
- *                  NTAZ(L) = 1 + NTAZ(L->suite) si L->valeur != 0    
- *                  NTAZ(L) = 0                  si L->valeur == 0  --> Cas de base
+ *      NTAZ(L) = 1 + NTAZ(L->suite) si L->valeur != 0    
+ *      NTAZ(L) = 0                  si L->valeur == 0  --> Cas de base
  *  else:
- *                  NTAZ(L) = 0                                     --> Cas de base
+ *      NTAZ(L) = 0                                     --> Cas de base
  */         
 
 int NTAZ_Rec (Liste L) {   
-    if (!L || (L && L->valeur == 0)) return 0;
+    if (L == NULL || (L != NULL && L->valeur == 0)) return 0;
     return 1 + NTAZ_Rec(L->suite);
 }
 
-/*******************************************************************/
+/******* Version avec une sous-fonction récursive terminale *****/
 /*
  *  Pour être récursif terminal, on stocke le résultat dans 
- *  une valeur qui est passée en argument et on la renvoie lors du cas de base
+ *  une valeur cnt qui est passée en argument (le compteur "in") 
+ *  et on la renvoie lors du cas de base
  *  On réécrit donc la formule de cette manière:
- *  if (L != NULL)
- *                  NTAZ(L, cnt) = NTAZ(L->suite, cnt + 1) si L->valeur != 0    
- *                  NTAZ(L, cnt) = cnt                     si L->valeur == 0 --> Cas de base
+ *  if (L != NULL):
+ *      NTAZ(L, cnt) = NTAZ(L->suite, cnt+1 ) si L->valeur != 0    
+ *      NTAZ(L, cnt) = cnt                    si L->valeur == 0 -> Cas de base
  *  else:       
- *                  NTAZ(L, cnt) = cnt                                       --> Cas de base
+ *      NTAZ(L, cnt) = cnt                                      -> Cas de base
  *  
  *  On commence par NTAZ(L, 0) où L est la liste d'origine
  *
  */  
 
 int NTAZ_RTSF_aux(Liste L, int cnt) {
-    if (!L || (L && L->valeur == 0)) return cnt;
+    if (L == NULL || (L != NULL && L->valeur == 0)) return cnt;
     return NTAZ_RTSF_aux(L->suite, cnt + 1);
 
 }
@@ -359,11 +356,10 @@ int NTAZ_RTSF (Liste L) {
     return NTAZ_RTSF_aux(L, 0);
 }
 
-/********************************************************************/
-
+/******* Version avec une sous-procédure récursive terminale *****/
 /*
  * On ne peut pas renvoyer le resultat, on met donc à jour le resultat
- * directment via un pointeur d'entier. 
+ * directment via un pointeur d'entier (int* cnt : le compteur "inout"). 
  */
 
 void NTAZ_RTSP_aux(Liste L, int* cnt) {
@@ -385,19 +381,18 @@ int NTAZ_RTSP (Liste L) {
 /*                                          */
 /********************************************/
 
+/************* Version recursive ************/
 /*
- * Comme on a besoin de connaître à chaque etape (L) la position courante, on definit donc
- * une procedure auxiliaire permet d'initialiser la fonction à 1.
+ * Comme on a besoin de connaître à chaque etape la position courante,
+ * on definit donc une procedure auxiliaire permet d'initialiser pos à 1
  *
- * Il faut ensuite être prudent lors de la suppression d'un
- * élément avec le pointeur double si l'élément actuel == pos.
- * (après la suppression d'un élément, on ne doit pas avancer encore pointeur L).
+ * Il faut ensuite être dans le cas où l'élément actuel == pos :
+ * après la suppression de cet élément, on ne doit pas avancer encore pointeur L.
  */
+
 void TuePosRec_aux(Liste *L, int pos) {
     if (*L && (*L)->valeur == pos) {
-        Liste tmp = *L;
-        *L = (*L)->suite;
-        free(tmp);
+        depile(L);
         TuePosRec_aux(L, pos + 1);
     }
     else if (*L) {
@@ -410,19 +405,13 @@ void TuePosRec (Liste * L) {
     TuePosRec_aux(L, 1);
 }
 
-/********************************************************************/
-
+/************* Version iterative ************/
 void TuePosIt (Liste * L) {
     int pos = 1;
-    while (*L) {
-        if ((*L)->valeur == pos) {
-            Liste tmp = (*L);
-            (*L) = (*L)->suite;
-            free(tmp);
-        }
-        else {
-            L = &((*L)->suite);
-        }
+    while (*L) {  
+        if ((*L)->valeur == pos) depile(L);
+        else L = &((*L)->suite);
+
         pos++;
     }
 }
@@ -439,7 +428,8 @@ void TuePosIt (Liste * L) {
  * On maintient un pointer posBack
  * (moralement c'est une variable "globale" pour cette fonction)
  * On avance L par un appel récursif pour arriver à la fin de la liste. 
- * Lorsque l'on depile, on augmente posBack -> la position courante en partant de la fin
+ * Lorsque l'on depile, on augmente posBack -> 
+ * la position courante en partant de la fin
  * Donc, si l'élement courant a pour valeur posBack, on l'enlève 
  *
  */
@@ -448,9 +438,7 @@ void TueRetroPos_aux(Liste* L, int* posBack) {
         TueRetroPos_aux(&((*L)->suite), posBack);
         (*posBack)++;
         if ((*posBack) == (*L)->valeur) {
-            Liste tmp = (*L);
-            *L = (*L)->suite;
-            free(tmp);
+            depile(L);
         }
     }
 
@@ -844,7 +832,7 @@ void test_TueRetroPos(void) {
     assert(check_equals(l1, tab1_, 6));
     VideListe(&l1);
     
-    // Test 2:
+    // Test 2
     int tab2[] = {5, 5, 5, 5, 5};
     Liste l2 = build_list(tab2, 5);
     TueRetroPos(&l2); // Faut donner [5, 5, 5, 5]
@@ -885,7 +873,7 @@ void test_TueRetroPos(void) {
     assert(check_equals(l7, tab7_, 3));    
     VideListe(&l7);
     
-    // Test 8: Two elements
+    // Test 8: 2 elements
     int tab8[] = {2, 1};
     Liste l8 = build_list(tab8, 2);
     TueRetroPos(&l8);
