@@ -22,6 +22,7 @@
 
 typedef enum {false, true} bool;    
 // NOTE: gcc peut se plaindre si on inclut pas -std=c99
+// gcc 2Bis.c -std=c99 -pedantic -Wall -Wextra -Werror -o 2Bis
 
 /* NOTE: ******************************************************************
  * Comme suggéré dans les consignes du TP, 
@@ -42,7 +43,7 @@ void *mallocCpt(size_t size) {
     if (ptr != NULL) CptMalloc++;
     return ptr;
 }
-void freeCpt(void *p) {
+void freeCpt(void *p) { 
     if (p == NULL) return;
     assert(CptMalloc > 0);
     CptMalloc--;
@@ -65,7 +66,7 @@ void freeCpt(void *p) {
  * allouer un nouveau bloc pour chaque sous-liste générée, 
  * la mémoire exploserait rapidement.
  *
- * On remarque que les nouvelles listes partagent toujours un suffixe 
+ * On remarque que les nouvelles listes partagent toujours un préfixe 
  * commun avec d’autres listes. Par ex:
  * Soit L = [[2,3], [1,4], [5]] chaque liste a une somme de q = 5 
  * et que l’on veut construire les listes de somme q+1, 
@@ -77,9 +78,9 @@ void freeCpt(void *p) {
  * Cela permet de réutiliser les suffixes sans les recopier.
  *
  * Cependant, la partie délicate se situe lors de la libération de la mémoire
- * Suppose:   [1] <- [2] <- [4]
- *                    ^       
- *                   [3]
+ * Supposons la situation suivante :   [1] <- [2] <- [4]  
+ *                                             ^       
+ *                                            [3]
  *
  * Les blocs 3 et 4 pointent tous deux sur 2, qui lui-même pointe sur 1.
  * Si on libère 2 trop tôt, alors 3 et 4 pointeront vers 
@@ -95,7 +96,7 @@ void freeCpt(void *p) {
  *   + si refCpt == 0: on peut réellement le libérer, 
  *                     puis tenter la même opération sur son bloc suite.
  *
- * Ainsi, dans l’exemple ci-dessus :
+ * Ainsi, dans l’exemple ci-dessus : (ici les blocs sont libérables à refCpt == 1)
  *   [1, ref:2] <- [2, ref: 3] <- [4, ref: 1]
  *                  ^
  *                 [3, ref: 1]
@@ -103,7 +104,7 @@ void freeCpt(void *p) {
  * Quel que soit l’ordre dans lequel on libère les blocs, 
  * aucun double free n’est possible. Un bloc n’est libéré 
  * que lorsque plus aucune liste ne le référence, 
- * ce qui garantit qu’aucun suffixe partagé ne sera perdu, 
+ * ce qui garantit qu’aucun préfixe partagé ne sera perdu, 
  * et qu’aucun bloc ne sera libéré trop tôt. 
  *
  * **************************************************************************/
@@ -135,8 +136,8 @@ void decRef(Liste l) {
 }
 
 /****************************************************************************/
-/* Fonction ajoute pour créer un nouveau bloc comme dans partie 2.
- * Il faut init le refCpt et augmenter refCpt son bloc suite
+/* Fonction ajoute pour créer un nouveau bloc comme dans la partie 2.
+ * Il faut init le refCpt et augmenter le refCpt de son bloc suite
  */
 
 Liste ajoute(int val, Liste suite) {
@@ -165,7 +166,7 @@ void afficheListe(Liste L) {
 }
 
 /****************************************************************************/
-// Ici, on n'a besoin d'appeler decRef une seule fois et il s'occupera
+// Ici, on n'a besoin d'appeler decRef une seule fois et il s'occupera du reste,
 // car on ne peut que réellement libérer les blocs si refCnt == 0
 void videListe(Liste *L) {
     if (*L == NULL) return; 
@@ -201,8 +202,8 @@ void afficheListeListe(ListeListe L) {
 }
 
 /****************************************************************************/
-// Car decRef s'occupe au niveau de la liste, donc il faut parcourir pour
-// chaque Liste de ListeListe on l'appele.
+// decRef s'occupe de la liste passé en paramètre uniquement, donc il faut parcourir tout la ListeListe 
+// Pour chaque Liste de ListeListe on réitère l'appel.
 
 void videListeListe(ListeListe *L) {   
     while (*L != NULL) {
@@ -210,16 +211,16 @@ void videListeListe(ListeListe *L) {
         *L = tmp->suite;
         decRef(tmp->l);
         
-        // Les blocs de la Liste peuvent toujours être encore référencés, 
-        // mais on peut libérer la mémoire (ListeListe) contenant 
-        // les pointeurs vers ces blocs 
+        // Les blocs de la Liste peuvent toujours être référencés, 
+        // mais on peut libérer la mémoire (ListeListe) contenant
+        // les pointeurs vers ces blocs
         freeCpt(tmp);
     } 
 }
 
 /****************************************************************************/
 // Concaténer deux listes de listes : L = L1 @ L2
-// Ex: concat( [[2,3], [1]] , [[1,2], [3]]) donne [[2,3], [1], [1,2,3], [3]]
+// Ex: concat( [[2,3], [1]] , [[1,2], [3]]) donne [[2,3], [1], [1,2], [3]]
 // L'idée est de lier la fin de L1 au début de L2. Complexité: O( |L1| )
 ListeListe concat(ListeListe L1, ListeListe L2) {
     if (L1 == NULL) return L2;
@@ -228,13 +229,13 @@ ListeListe concat(ListeListe L1, ListeListe L2) {
     while (L->suite != NULL) L = L->suite;
     L->suite = L2;
     
-    return L1;  
+    return L1;
 }
 
 /****************************************************************************/
 // Ajout d'un élément x en tête de toutes les listes de ListeListe
 // Ex: addToAll(x, [[2, 3], [1], [4]]) donne [[x, 2, 3], [x, 1], [x, 4]]
-// L'idée: pour chaque liste, un nouveau bloc de x pointe vers sa tête 
+// Pour chaque liste, un nouveau bloc contenant x pointe vers sa tête 
 // Complexité: O( |L| )
 ListeListe addToAll(int x, ListeListe L) {
     if (L == NULL) return NULL;
@@ -271,11 +272,11 @@ ListeListe addToAll(int x, ListeListe L) {
  * 
  * On observe que q1 et q2 sont constantes donc il y a au maxi 
  * q sous-problèmes pour n'importe appel de PPQ(p1, p2, q) ~ PPQ(q). 
- * On peut donc optimiser la récursion en mémoriser les résulat de 
- * sous-problèmes. C-a-d on stocke le résulat de mem[q] = PPQ(q) 
+ * On peut donc optimiser la récursion en mémorisant les résulats de chaque
+ * sous-problème. C-a-d on stocke le résulat de mem[q] = PPQ(q) 
  * et pour tout q' = q + p où p dans [p1,p2],
  * on peut calculer PPQ(q') sans recalculer PPQ(q).
- * C'est recursion with memoization.
+ * (recursion with memoization).
  *
  * On définit une fonction auxiliaire rec_PPQ pour stocker mem qui est 
  * un tableau d'adresses de BlocListe (ListeListe).  
@@ -334,7 +335,7 @@ Liste build_list(int arr[], int n) {
 }
 
 // Les listes attendues doivent être dans le même ordre que L
-// bof mais ca marche pour tester
+// On peut mieux faire mais pour nos tests cela devrait suffire.
 bool eqLL_2DArr(ListeListe L, int tab[][20], int r, int c[]) {
     for (int i = 0; i < r; i++) {
         if (L == NULL) return false;
