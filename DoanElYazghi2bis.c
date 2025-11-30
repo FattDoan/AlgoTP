@@ -96,7 +96,8 @@ void freeCpt(void *p) {
  *   + si refCpt == 0: on peut réellement le libérer, 
  *                     puis tenter la même opération sur son bloc suite.
  *
- * Ainsi, dans l’exemple ci-dessus : (ici les blocs sont libérables à refCpt == 1)
+ * Ainsi, dans l’exemple ci-dessus : 
+ * (ici les blocs sont libérables à refCpt == 1)
  *   [1, ref:2] <- [2, ref: 3] <- [4, ref: 1]
  *                  ^
  *                 [3, ref: 1]
@@ -202,8 +203,8 @@ void afficheListeListe(ListeListe L) {
 }
 
 /****************************************************************************/
-// decRef s'occupe de la liste passé en paramètre uniquement, donc il faut parcourir tout la ListeListe 
-// Pour chaque Liste de ListeListe on réitère l'appel.
+// decRef s'occupe de la liste passé en paramètre uniquement, 
+// donc il faut parcourir tout la ListeListe 
 
 void videListeListe(ListeListe *L) {   
     while (*L != NULL) {

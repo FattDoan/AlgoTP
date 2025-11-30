@@ -36,6 +36,39 @@ Bloc* ajoute(int x, Bloc* suite) {
     return tmp;
 }
 
+/* NOTE: ***********************************************************
+ * Nous disposons de deux variantes de la file comme indiqué       *
+ * dans les consignes du TP :                                      *
+ * - File1 : variante de pointeur sortie                           *
+ *   et pointeur de pointeur entree                                *
+ *                                                                 *
+ * - File2 : variante de la liste circulaire                       *
+ *                                                                 *
+ *   Voici les fonctions implémentées pour les deux variantes:     *
+ *                                                                 *
+ *   File* fileVide();                                             *
+ *   -> allouer la mémoire pour init une nouvelle file             *
+ *                                                                 *
+ *   bool estVideFile(file* F);                                    *
+ *   -> renvoie true si la file est vide, false sinon              *
+ *                                                                 *
+ *   void entree(int x, file* F);                                  *
+ *   -> ajouter à la file un élément ayant la valeur x             *
+ *                                                                 *
+ *   void sortie(int* x, file* F);                                 *
+ *   -> supprimer un élément à l'avant de la file                  *
+ *   (et x prend sa valeur)                                        *
+ *                                                                 *
+ *   void afficheFile(file* F);                                    *
+ *   -> afficher la file                                           *
+ *                                                                 *
+ *   int sizeFile(file* F);                                        *
+ *   -> renvoie le nb d'éléments de la file                        *
+ *                                                                 *
+ *   int videFile(file* F);                                        *
+ *   -> vider la file et libérer la mémoire                        *
+ * *****************************************************************/
+
 /*******************************************************************
  *                                                                 *
  *              Variante de pointeur sortie                        *
@@ -50,6 +83,9 @@ typedef struct File1 {
 
 /*******************************************************************/
 // Si la file est vide, entree doit avoir l'adresse de sortie
+// Note: pour init une file, on doit toujours commencer par 
+// File1* f = file1Vide()
+
 File1* file1Vide() {
     File1* f = malloc(sizeof(File1));
     f->sortie = NULL;
@@ -143,6 +179,9 @@ typedef struct File2 {
 
 /*******************************************************************/
 // La file est vide <=> f->dernier == NULL
+// Note: pour init une file, on doit toujours commencer par 
+// File2* f = file2Vide()
+
 File2* file2Vide() {
     File2* f = malloc(sizeof(File2));
     f->dernier = NULL;
@@ -157,10 +196,10 @@ bool estVideFile2(File2* f) {
  *                             entree2                             *            
  *                                                                 *
  *******************************************************************/
-// L'idée: crée un nouveau bloc 
-//         pointe vers f->dernier->suite (la tête de la file)
-//         le bloc de f->dernier pointe vers ce bloc 
-//         f->dernier = ce bloc
+// L'idée: 1) crée un nouveau bloc 
+//         2) il pointe vers f->dernier->suite (la tête de la file)
+//         3) le bloc de f->dernier pointe vers ce bloc 
+//         4) f->dernier = ce bloc
 // <!> Cas limite: la file est vide -> le bloc pointe vers lui-même
 void entree2(int x, File2* f) {
     assert(f != NULL);
@@ -415,8 +454,8 @@ void TESTS_File2() {
 int main() {
     TESTS_File1();
     TESTS_File2();
-
-    // File1 
+ 
+    // Exemple d'utilisation de File1
     File1* f1 = file1Vide();
     entree1(3, f1); entree1(5, f1);
     entree1(9, f1); entree1(7, f1);
@@ -429,7 +468,9 @@ int main() {
     videFile1(f1);
 
     printf("\n");
-    // File 2
+    
+
+    // Exemple d'utilisation de File2
     File2* f2 = file2Vide();
     entree2(3, f2); entree2(5, f2);
     entree2(9, f2); entree2(7, f2);

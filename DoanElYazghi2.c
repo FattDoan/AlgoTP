@@ -22,7 +22,7 @@
 
 /*************************************************/
 /*                                               */
-/*                type bool�en                   */
+/*                Type booléen                   */
 /*                                               */
 /*************************************************/
 
@@ -210,12 +210,12 @@ bool UnPlusDeuxEgalTrois (Liste L) {
     int sum = 0;
     if (L != NULL) {
         sum += (L->valeur);
-        if (L->suite) {
+        if (L->suite != NULL) {
             L = L->suite;
             sum += (L->valeur);
         }
+        L = L->suite;
     }
-
     bool ret = (L != NULL) ? (sum == L->valeur) : (sum == 0);
     return ret; 
 }
@@ -480,7 +480,6 @@ bool check_equals(Liste l, int arr[], int n) {
 /**********************************************************/
 
 void test_UnPlusDeuxEgalTrois(void) {
-    printf("Testing UnPlusDeuxEgalTrois...\n");
     
     // Test 1
     int tab1[] = {23, 19, 42, 4, 2};
@@ -539,7 +538,6 @@ void test_UnPlusDeuxEgalTrois(void) {
 /**********************************************************/
 
 void test_PlusCourte(void) {
-    printf("Testing PlusCourte...\n");
     
     // Test 1: |l1| < |l2|
     int tab1[] = {1, 2};
@@ -609,7 +607,6 @@ void test_PlusCourte(void) {
 /**********************************************************/
 
 void test_VerifiekO(void) {
-    printf("Testing VerifiekO...\n");
     
     // Test 1
     int tab1[] = {2, 0, 0, 7, 0, 6, 2, 4, 0};
@@ -680,7 +677,6 @@ void test_VerifiekO(void) {
 /********************************************************/
  
 void test_NombreTermesAvantZero(void) {
-    printf("Testing NombreTermesAvantZero...\n");
     
     // Test 1: Zero au milieu 
     int tab1[] = {3, 2, 9, 5, 0, 6, 0};
@@ -762,7 +758,6 @@ void test_NombreTermesAvantZero(void) {
 /********************************************************/
 
 void test_TuePos(void) {
-    printf("Testing TuePos...\n");
     
     // Test 1: Cas du consigne TP
     int tab1[] = {0, 4, 3, 9, 5, 0, 9, 2, 1};
@@ -822,7 +817,6 @@ void test_TuePos(void) {
 /********************************************************/
 
 void test_TueRetroPos(void) {
-    printf("Testing TueRetroPos...\n");
     
     // Test 1: Cas du consigne
     int tab1[] = {0, 4, 3, 9, 5, 0, 9, 2, 1};
@@ -899,9 +893,7 @@ void test_TueRetroPos(void) {
 
 int main(void)
 {
-    printf("=================================\n");
-    printf("Running Linked List Test Suite\n");
-    printf("=================================\n\n");
+    printf("Running Linkedlist test suite\n");
     
     test_UnPlusDeuxEgalTrois();
     test_PlusCourte();
@@ -910,9 +902,7 @@ int main(void)
     test_TuePos();
     test_TueRetroPos();
     
-    printf("=================================\n");
     printf("All tests passed successfully!\n");
-    printf("=================================\n");
 }
 
 

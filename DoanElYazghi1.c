@@ -1,20 +1,21 @@
-/****************************************************************************************
- *                         RENDU DU TP ALGO : Partie 1                                  *   
- *  Noms du binôme: Thanh Phat DOAN (thanh-phat.doan@universite-paris-saclay.fr)        *
- *                  Naël EL YAZGHI  (nael.el-yazghi@universite-paris-saclay.fr)         *
- *                                                                                      *
- *  Le code est conforme à la norme C99 et a été compilé avec les options               *
- *  les plus strictes: -std=c99 -pedantic -Wall -Wextra -Werror.                        *
- *  Les fuites mémoire ont été vérifiées avec Valgrind (--leak-check=full)              *
- *                                                                                      *
-*****************************************************************************************/
+/**************************************************************************
+ *                     RENDU DU TP ALGO : Partie 1                        *   
+ *  Noms du binôme:                                                       *
+ *  - Thanh Phat DOAN (thanh-phat.doan@universite-paris-saclay.fr)        *
+ *  - Naël EL YAZGHI  (nael.el-yazghi@universite-paris-saclay.fr)         *
+ *                                                                        *               
+ *  Le code est conforme à la norme C99 et a été compilé avec les options *               
+ *  les plus strictes: -std=c99 -pedantic -Wall -Wextra -Werror.          *
+ *  Les fuites mémoire ont été vérifiées avec Valgrind (--leak-check=full)*
+ *                                                                        *
+***************************************************************************/
 
-/* Note *********************************************************************************
- * Nos schémas de nommage et structure de fonctions suivent strictement le fichier      *
- * Algo1.c fourni. Les tests donnés par ce fichier devraient donc marcher sans          *
- * modification                                                                         *
- * (le nommage de fonctions existe une légère différence dans les consignes du TP)      *
- * **************************************************************************************/
+/* Note *******************************************************************
+ * Nos schémas de nommage et structure de fonctions suivent strictement   *
+ * le fichier Algo1.c fourni. Les tests donnés par ce fichier devraient   *
+ * donc marcher sans modification (le nommage de fonctions existe une     *
+ * légère différence dans les consignes du TP)                            *
+ * ************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -168,10 +169,13 @@ long fact(int n , int v )   // numéro de version
  * mais c'est une bonne pratique quand même.
  * */
 
- /* "Vous ne sommerez pas jusqu’`a l’infini... Quand et comment vous arrêterez-vous"
-        --> On a pris la décision de s'arrêter lorsque 1/n! deviens inférieur à la 
-            limite des constantes à virgule flottante, i.e. FLT_MIN = 1,175494351*10^-38 
-            pour les flottants. On obtient ce résultat directement en vérifiant la condition
+ /* "Vous ne sommerez pas jusqu’`a l’infini... 
+  * Quand et comment vous arrêterez-vous?"
+        --> On a pris la décision de s'arrêter lorsque 1/n! deviens 
+            inférieur à la limite des constantes à virgule flottante, 
+            i.e. FLT_MIN = 1,175494351*10^-38 
+            pour les flottants. 
+            On obtient ce résultat directement en vérifiant la condition
             1/n! = 0 à chaque itération.
     
  */
@@ -239,13 +243,15 @@ void afficheLongDouble(long double ld) {
 
 
  /* Observation: On constate que le programme affiche bien un résultat 
-  * qui converge vers 0, avant de diverger vers l'infini, positif ou négatif selon les cas.
+  * qui converge vers 0, avant de diverger vers l'infini, 
+  * positif ou négatif selon les cas.
   *
   * Mathématiquement, yn converge vers 0 pour y0 = e-1, diverge vers +inf si 
   * y0>e-1 et diverge vers -inf sinon.
   * 
-  * Lorsque yn deviens suffisamment petit, l'erreur due à la précision sur les flottants est telle que
-  * yn sors de la zone de convergence, ce qui explique le comportement du code.
+  * Lorsque yn deviens suffisamment petit, l'erreur due à la précision sur 
+  * les flottants est telle que yn sors de la zone de convergence, 
+  * ce qui explique le comportement du code.
   */
 
 
@@ -427,8 +433,9 @@ int* T = (int*) malloc(n*sizeof(int)) ;
 
 /***************************************************************/
 
-int* P_Zero (int n)    // Permutation bidon, qui n'est pas une permutation (sauf n=0 ou 1 ...)
-{ int* T = (int*) malloc(n*sizeof(int)) ;
+// Permutation bidon, qui n'est pas une permutation (sauf n=0 ou 1 ...)
+int* P_Zero (int n)    { 
+  int* T = (int*) malloc(n*sizeof(int)) ;
   for (int i=0 ; i<n ; i++) T[i] = 0 ;
   return T ;
 }
@@ -468,7 +475,8 @@ int* P_Inverse(const int* P, int n) {
  * La raison est que l'on cherche à obtenir R = P o Q de sorte que
  * R puisse aussi être P et/ou Q (R apparaît dans le membre de droite).
  * Par ex : P = P o Q , P = P o R , P = P o P
- * En effet, dans ce cas de figure, on ne peut pas accéder et modifier P en même temps. 
+ * En effet, dans ce cas de figure, 
+ * on ne peut pas accéder et modifier P en même temps. 
  * 
  * Cela rend notre code plus lisible,propre et concis, 
  * surtout dans les fonctions de puissance. */
@@ -492,7 +500,9 @@ void P_Compose(const int* P, const int* Q, int* R, int n) {
  * On peut utiliser plus de mémoire (avec un tableau seen[] de taille N) 
  * pour effectuer cette vérification en O(N):
  * 
- * Pour tout i dans [0, n-1(, seen[i] signifie si que l'on a déjà vu la valeur i dans P[]
+ * Pour tout i dans [0, n-1(, seen[i] signifie si 
+ * que l'on a déjà vu la valeur i dans P[]
+ * 
  * Pour chaque i, si on l'a pas vu la valeur P[i] :
  *          -> On valide,et donc, mise à jour de seen[P[i]] = true
  *          -> Sinon, P n'est pas valide
@@ -563,7 +573,8 @@ int* P_power3(const int* P, int n, int k) {
 /***************************************************************/
 
 /* version iterative rapide 
- * Il est juste question de traduire la formule de récursion au style 'bottom up'
+ * Il est juste question de traduire la formule de 
+ * récursion au style 'bottom up'
  * 
  * pow(P, n, 0)       = P_identite(n)
  * pow(P, n, 2*k)     = pow(P, n, k) * pow(P, n, k) 
@@ -584,11 +595,14 @@ int* P_power4(const int* P, int n, int k) {
     free(P_base);
     return P_k;
 }
-const int VersionsPuissance = 4 ; // nombre de versions de Puissance, soit 4 selon énoncé
+
+const int VersionsPuissance = 4 ; 
+// nombre de versions de Puissance, soit 4 selon énoncé
 
 /*************************************************/
 
-int* P_power(const int* P, int n, int k, int v )   // version v de 1 à VersionsPuissance
+// version v de 1 à VersionsPuissance
+int* P_power(const int* P, int n, int k, int v )   
 { switch (v)  
    {
    case 1 : return P_power1(P,n,k) ; break ;
@@ -620,8 +634,11 @@ int* P_random(int n) {
 
 /* helper macro pour faire des tests
            printf("\n") ;
- * assert de C suffit mais il quitte le programme tout suite si l'un assert échoue
- * en plus, on permet d'avoir plusieurs types d'assert */
+ * assert de C suffit mais il quitte le programme tout suite 
+ * si l'un assert échoue
+ * en plus, on permet d'avoir plusieurs types d'assert de nombre flottant
+ * pour cette partie */
+
 #define ASSERT(cond) do {   \
     if (!(cond)) {    \
         printf("\nTEST FAILED: %s:%d: %s\n", __FILE__, __LINE__, #cond);   \
@@ -637,15 +654,18 @@ void TEST_1_1(void) {
     printf("1.1 TEST : ");
     /* Note:
      * La fonction exp() de math.h nous suffirait aussi, 
-     * mais elle nécessite un linking lors de la compilation, selon le compilateur et le système,
-     * cela pourrait poser problème.
-     * (par exemple, gcc fonctionne sur mon système, mais clang nécessite une liaison). 
-     * Ecrire à la main la constante semble étrang au premier abord mais c'est la solution la plus
+     * mais elle nécessite un linking lors de la compilation, 
+     * selon le compilateur et le système, cela pourrait poser problème.
+     * (par exemple, gcc fonctionne sur mon système, 
+     * mais clang nécessite une liaison). 
+     * Ecrire à la main la constante semble étrange au premier abord 
+     * mais c'est la solution la plus
      * généraliste que nous avons trouvé.
      */
     float e_math_f = 2.71828182845904523536028747135266249775724709369995f;
     double e_math_d = 2.71828182845904523536028747135266249775724709369995;
-    long double e_math_ld = 2.71828182845904523536028747135266249775724709369995L;
+    long double e_math_ld = 
+        2.71828182845904523536028747135266249775724709369995L;
     
     /* float approximation */
     float ef = Efloat();
@@ -657,9 +677,10 @@ void TEST_1_1(void) {
 
     /* long double approximation */
     /*  Note:
-     *  En fait, l'epsilon pour tester long double devrait être plus petit (de 1e-18 à 1e-21). 
+     *  En fait, l'epsilon pour tester long double devrait être plus petit 
+     *  (de 1e-18 à 1e-21). 
      *  Cependant, sous Windows, long double utilise 8 octets comme double, 
-     *  Si on testait avec un epsilon aussi strict,on échouerait sur le système Windows . 
+     *  Si on testait avec un epsilon aussi strict,on échouerait sur Windows. 
      * (contrairement à Linux et MacOS qui encodent long double en 16 octets)
      **/
     long double eld = Elongdouble();
@@ -879,7 +900,7 @@ int main(void) {
     /* Note: ***************************************************************
      * Les tests P_power sont ici mal conçus. En effet, comme P_power      *
      * alloue constamment de la nouvelle mémoire pour la permutation P^k,  *
-     * et que cette mémoire n'est jamais capturée, on ne peut pas la
+     * et que cette mémoire n'est jamais capturée, on ne peut pas la       *
      * libérer à la fin.                                                   *
      ***********************************************************************/
     if (false) 
