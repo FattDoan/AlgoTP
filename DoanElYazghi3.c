@@ -54,6 +54,10 @@ void FreeImg(image img) {
 /********************************************************/
 image Wht() {
     image img = (image)malloc(sizeof(bloc_image));
+    if (img == NULL) {
+        perror("Erreur d'allocation mémoire");
+        exit(EXIT_FAILURE);
+    }
     img->blanc = true;
     for (int i = 0; i < 4; i++) img->Im[i] = NULL;
     return img;
@@ -73,6 +77,11 @@ image Blk() {
 /********************************************************/
 image Cut(image i0, image i1, image i2, image i3) {
     image img = (image)malloc(sizeof(bloc_image));
+    if (img == NULL) {
+        perror("Erreur d'allocation mémoire");
+        exit(EXIT_FAILURE);
+    }
+ 
     img->Im[0] = i0; img->Im[1] = i1;
     img->Im[2] = i2; img->Im[3] = i3;
     if (i0 == NULL && i1 == NULL && i2 == NULL && i3 == NULL) {
@@ -136,10 +145,9 @@ image Lecture_aux(char* arr, int* cur_idx, int n) {
     char cur_char = arr[*cur_idx];
     (*cur_idx)++;
 
-    // UTILIZE Cut ?
     if (cur_char == 'Z') {
         return Blk();
-     }
+    }
     if (cur_char == 'o') {
         return Wht();
     }
@@ -228,12 +236,9 @@ float QuotaNoir(image img) {
 /********************************************************/
 image Copie(image img) {
     if (img == NULL) return NULL;
-    image new_img = (image)malloc(sizeof(bloc_image));
-    new_img->blanc = img->blanc;
-    for (int i = 0; i < 4; i++) {
-        new_img->Im[i] = Copie(img->Im[i]);
-    }
-    return new_img;
+
+    return Cut(Copie(img->Im[0]), Copie(img->Im[1]),
+               Copie(img->Im[2]), Copie(img->Im[3]));
 }
 /********************************************************/
 /*                                                      */
@@ -241,21 +246,10 @@ image Copie(image img) {
 /*                                                      */
 /********************************************************/
 image Diagonale(int p) {
-    if (p == 1) {
-        image img = (image)malloc(sizeof(bloc_image));
-        img->blanc = false;
-        img->Im[0] = Blk(); img->Im[1] = Wht(); 
-        img->Im[2] = Wht(); img->Im[3] = Blk();
-        return img;
-    }
-    
+    if (p == 1) return Cut(Blk(), Wht(), Wht(), Blk());
 
-    image img = (image)malloc(sizeof(bloc_image));
-    img->blanc = false;
-    img->Im[0] = Diagonale(p-1); img->Im[1] = Wht();
-    img->Im[2] = Wht(); img->Im[3] = Copie(img->Im[0]);
-
-    return img;
+    image tmp = Diagonale(p-1);
+    return Cut(tmp, Wht(), Wht(), Copie(tmp));
 }
 
 int main() {
