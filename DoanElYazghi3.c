@@ -257,6 +257,7 @@ image Diagonale(int p) {
 
     return img;
 }
+
 int main() {
     image img = Diagonale(3);
     Affiche(img);
