@@ -82,7 +82,17 @@ void DessineLigne(image img, int y, int p, int n) {
     // on divise en 4 quadrants
     // mais on ne dessine que 
     // les 2 quadrants correspondants à la ligne y
-    
+   // (car on dessine ligne par ligne)
+
+    //  L'image img de profondeur p et de taille n*n est divisée en 4 quadrants:
+    //  |----------------------------------|---------------------------------|
+    //  |  DessineLigne(img, y, p-1, n/2)  | DessineLigne(img, y, p-1, n/2)  |  
+    //  |----------------------------------|---------------------------------|
+    //  |  DessineLigne(img, y', p-1, n/2) | DessineLigne(img, y', p-1, n/2) | 
+    //  |----------------------------------|---------------------------------|
+    // 
+    //  où n = y + y'
+
     int n2 = n / 2;
     if (y < n2) {  // top 2 quadrants
         DessineLigne(img->Im[0], y, p - 1, n2);
@@ -103,6 +113,20 @@ void Dessine(image img) {
     printf("\n");
 }
 /********************************************************/
+// Vérifie si deux images sont égales
+// Utile pour les tests
+bool equals(image img1, image img2) {
+    if (img1 == NULL && img2 == NULL) return true;
+    if (img1 == NULL || img2 == NULL) return false;
+    if (img1->blanc != img2->blanc) return false;
+
+    for (int i = 0; i < 4; i++) {
+        if (!equals(img1->Im[i], img2->Im[i])) {
+            return false;
+        }
+    }
+    return true;
+}
 
 /********************************************************/
 /*                                                      */
@@ -437,7 +461,7 @@ void SimplifieProfP(image* img, int p) {
  * est poursuivie et le résultat n’est déterminé qu’à partir des sous-images.
  * 
  * Cette petite optimisation évite des parcours inutiles de l’arbre et 
- * permet de ramener la complexité globale de Incluse à O(log n).
+ * permet de ramener la complexité globale à O(log n).
  *
  ***************************************************************************/
 bool Incluse(image img1, image img2) {
@@ -486,6 +510,33 @@ int CompteSousImagesGrises(image img) {
 /*                      Labyrinthe()                    */
 /*                                                      */
 /********************************************************/
+
+/* Nous abordons cette question en convertissant l'image codée en quadtree
+ * en tableau 2D, puis en effectuant un DFS (parcours en profondeur)
+ * dessus afin de trouver le chemin entre deux points. 
+ * Cela nous donne une complexité O(N^2). 
+ * Le BFS (parcours en largeur) fonctionnerait également, 
+ * mais comme nous ne cherchons pas à trouver le chemin le plus court, 
+ * un DFS récursif classique suffit.
+ *
+ * Nous n'avons pas envisagé concrètement la méthode alternative 
+ * consistant à parcourir directement le quadtree pour trouver le chemin, 
+ * car cela semble assez complexe. Nous supposons qu'une telle approche 
+ * donnerait un temps d'exécution meilleur que O(N^2) 
+ * si le labyrinthe est "creuse".
+ *
+ * Pour convertir une image quadtree en tableau 2D, 
+ * on utilise le même principe que la fonction Dessine(img) 
+ * pour dessiner la représentation de l'image sur le terminal.
+ * Au lieu d'imprimer chaque caractère ligne par ligne, on ajoute 
+ * chaque caractère d'une ligne au tableau row, et le tableau 2D 
+ * est formée par ces tableaux.
+ *
+ **************************************************************/
+
+// convertLine remplit la ligne y du tableau row
+// cur_idx est l'index courant dans row
+// Cf. la fonction dessineLigne() pour plus de détails de l'explication
 void convertLine(image img, int* cur_idx, int* row, int y, int p, int n) {
     if (img == NULL) {
         for (int i = 0; i < n; i++) {
@@ -509,8 +560,12 @@ void convertLine(image img, int* cur_idx, int* row, int y, int p, int n) {
         convertLine(img->Im[3], cur_idx, row, y - n2, p - 1, n2);
     }
 }
-// return 2D matrix in C syntax is a bit cursed
-void ConvertToMatrix(image img, int N, int arr[N][N]) {
+/********************************************************************/
+// Convertit l'image img en tableau 2D arr de taille N*N
+// où N = 2^p et p est la profondeur de img
+// en utilisant la fonction auxiliaire convertLine()
+// pour remplir chaque ligne
+void convertToMatrix(image img, int N, int arr[N][N]) {
     int p = Profondeur(img);
     for (int i = 0; i < N; i++) {
         int cur_idx = 0;
@@ -518,29 +573,33 @@ void ConvertToMatrix(image img, int N, int arr[N][N]) {
     }
 }
 
-void PrintMatrix(int N, int arr[N][N]) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            printf("%d ", arr[i][j]);
-        }
-        printf("\n");
-    }
-}
+/********************************************************************/
+// Vérifie si les coordonnées (x, y) sont valides dans le tableau N*N
 bool checkValid(int x, int y, int N) {
     return (x >= 0 && x < N && y >= 0 && y < N);
 }
+
+/********************************************************************/
+// Parcours en profondeur (DFS) pour trouver un chemin
+// de (x, y) à (N-1, N-1)
+// Le tableau 2D visited est pour marquer les cellules visitées
+// dirX et dirY sont les déplacements possibles (droite, bas, gauche, haut)
 bool DFS(int x, int y, int N, int arr[N][N], bool visited[N][N], int dirX[4], int dirY[4])  {
+    // cas de base: atteint le point (N-1, N-1)
     if (x == N - 1 && y == N - 1) {
-        return true; // reached the bottom-right corner
+        return true; 
     }
     
     visited[x][y] = true;
 
+    // pour chaque direction possible
     for (int i = 0; i < 4; i++) {
         int newX = x + dirX[i];
         int newY = y + dirY[i];
 
+        // si la nouvelle position est valide, non visitée et pas un mur (0 = blanc)
         if (checkValid(newX, newY, N) && arr[newX][newY] == 0 && !visited[newX][newY]) {
+            // appel récursif, si un chemin est trouvé, renvoie true tout de suite
             if (DFS(newX, newY, N, arr, visited, dirX, dirY)) {
                 return true;
             }
@@ -548,16 +607,21 @@ bool DFS(int x, int y, int N, int arr[N][N], bool visited[N][N], int dirX[4], in
     }
     return false;
 }
-
+/********************************************************************/
 
 bool Labyrinthe(image img) {
     int p = Profondeur(img);
     int N = 1 << p;
     int arr[N][N];
-    ConvertToMatrix(img, N, arr);
-    // possible moves: right, down, left, up
-    int dirX[] = {0, 1, 0, -1};
-    int dirY[] = {1, 0, -1, 0};
+    
+    // convertir l'image en tableau 2D
+    convertToMatrix(img, N, arr);
+    
+    // les déplacements possibles (droite, bas, gauche, haut)
+    int dirX[] = {1, 0, -1, 0};
+    int dirY[] = {0, 1, 0, -1};
+   
+    // init visited à false
     bool visited[N][N];
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
@@ -568,7 +632,15 @@ bool Labyrinthe(image img) {
     return DFS(0, 0, N, arr, visited, dirX, dirY);
 }
 
-int main() {
+/********************************************************************/
+/********************************************************/
+/*                                                      */
+/*                      TEST()                          */
+/*                                                      */
+/********************************************************/
+
+
+void TEST() {
 /*     image img = Diagonale(3);
     Affiche(img);
     printf("\n");
@@ -617,11 +689,17 @@ image img2 = Image("*oZ*Z*oZooo*Zooo *Z*oZooo*ZZoo");
 printf("CompteSousImagesGrises img2: %d\n", CompteSousImagesGrises(img2));
  */
 
-    //image img = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*oooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
-    image img = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*ZooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
+    image img = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*oooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
+    //image img = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*ZooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
     Dessine(img);
     
     printf("Reachable? : %s", Labyrinthe(img) ? "Yes\n" : "No\n");
+
+
+}
+
+int main() {
+    TEST();
     return 0;
 }
 
