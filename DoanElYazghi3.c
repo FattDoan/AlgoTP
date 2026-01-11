@@ -10,6 +10,7 @@
  *                                                                        *
 ***************************************************************************/
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -114,7 +115,10 @@ void Dessine(image img) {
 }
 /********************************************************/
 // Vérifie si deux images sont égales
-// Utile pour les tests
+// <!> Cette fonction teste l'égalité structurelle stricte des images
+// et non pas l'égalité visuelle.
+// (2 images peuvent être visuellement identiques
+// mais avoir des structures différentes dans le quadtree)
 bool equals(image img1, image img2) {
     if (img1 == NULL && img2 == NULL) return true;
     if (img1 == NULL || img2 == NULL) return false;
@@ -352,7 +356,8 @@ float QuotaNoir(image img) {
 /********************************************************/
 // Renvoie un Cut avec des copies des sous-images
 image Copie(image img) {
-    if (img == NULL) return NULL;
+    if (img == NULL) return Blk();
+    if (img->blanc) return Wht();
 
     return Cut(Copie(img->Im[0]), Copie(img->Im[1]),
                Copie(img->Im[2]), Copie(img->Im[3]));
@@ -639,67 +644,91 @@ bool Labyrinthe(image img) {
 /*                                                      */
 /********************************************************/
 
-
 void TEST() {
-/*     image img = Diagonale(3);
-    Affiche(img);
-    printf("\n");
-    ProfAffiche(img);
-    printf("\n"); 
-    Dessine(img); */
-//  SimplifieProfP   
-/*    image img = Image("* (*ZZZZ) (*Zo(*Z(*Z(*ZZZZ)(*ZZZZ)(*ZZZZ))ZZ)o) (*ZoZ(*ZoZ(*oooo))) (*oo(*oooo)o)");
-    Affiche(img);
-    printf("\n");
-    Dessine(img);
+    // Q5
+    image imgQ5 = Image("**o*oooo*ooooooo*oooo");
+    assert(DessinBlanc(imgQ5) == true);
+    assert(DessinNoir(imgQ5) == false);
+    FreeImg(imgQ5);
 
-    SimplifieProfP(&img, 2);
-    Affiche(img);
-    printf("\n");
-    Dessine(img);
-    FreeImg(img);
-  */
+    // Q6
+    image imgQ6 = Image("*Z*oZooZ*ZZZo");
+    assert(QuotaNoir(imgQ6) == 0.75f);
+    FreeImg(imgQ6);
 
+    // Q7
+    image imgQ7 = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*oooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
+    image imgQ7_copy = Copie(imgQ7);
+    assert(equals(imgQ7, imgQ7_copy) == true);
+    FreeImg(imgQ7);
+    // liberer l'image originale n'influence pas la copie
+    // -> faut pas SegFault
+    FreeImg(imgQ7_copy);
 
-/* image img1 = Image("***ooooZoZoZ**ooZZoo*ZooZ");
-image img2 = Image("**oZZZ*ooZo*ZZZZ*ZoZ*ZZZo");
+    // Q8
+    image imgQ8 = Diagonale(3);
+    image ans_imgQ8 = Image("***ZooZoo*ZooZoo**ZooZoo*ZooZ");
+    assert(equals(imgQ8, ans_imgQ8) == true);
+    FreeImg(imgQ8);
+    FreeImg(ans_imgQ8);
 
-printf("img1:\n");
-Affiche(img1); printf("\n");
-Dessine(img1);
+    // Q9
+    image imgQ9 = Image("* (*ZZZZ) (*Zo(*Z(*Z(*ZZZZ)(*ZZZZ)(*ZZZZ))ZZ)o) (*ZoZ(*ZoZ(*oooo))) (*oo(*oooo)o)");
+    image ans_imgQ9 = Image("*(*ZZZZ)(*ZoZo)(*ZoZ(*ZoZ(*oooo)))(*oooo)");
+    SimplifieProfP(&imgQ9, 2);
+    assert(equals(imgQ9, ans_imgQ9) == true);
+    FreeImg(imgQ9);
+    FreeImg(ans_imgQ9);
 
-printf("\n\nimg2:\n");
-Affiche(img2); printf("\n");
-Dessine(img2);
+    // Q10
+    image imgQ10_0 = Image("***ooooZoZoZ**ooZZoo*ZooZ");
+    image imgQ10_1 = Image("**oZZZ*ooZo*ZZZZ*ZoZ*ZZZo");
+    assert(Incluse(imgQ10_0, imgQ10_1) == false);
 
-printf("\n\nIncluse result: %d\n", Incluse(img1, img2));
-
-// Now change bottom-right
-image img1_modified = Image("***ooooZoZoZ**ooZZoo*Zooo");
-printf("\n\nimg1_modified:\n");
-Affiche(img1_modified); printf("\n");
-Dessine(img1_modified);
-
-printf("\n\nIncluse result after modification: %d\n", Incluse(img1_modified, img2));
- */
-
-/* image img = Image("*Z*oZooo*Zooo");
-printf("CompteSousImagesGrises: %d\n", CompteSousImagesGrises(img));
-image img2 = Image("*oZ*Z*oZooo*Zooo *Z*oZooo*ZZoo");
-printf("CompteSousImagesGrises img2: %d\n", CompteSousImagesGrises(img2));
- */
-
-    image img = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*oooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
-    //image img = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*ZooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
-    Dessine(img);
+    // On change le dernier pixel tout en bas à droite de imgQ10_0 de noir à blanc
+    image imgQ10_2 = Image("***ooooZoZoZ**ooZZoo*Zooo");
+    assert(Incluse(imgQ10_2, imgQ10_1) == true);
+    assert(Incluse(imgQ10_2, imgQ10_0) == true);
     
-    printf("Reachable? : %s", Labyrinthe(img) ? "Yes\n" : "No\n");
+    FreeImg(imgQ10_0);
+    FreeImg(imgQ10_1);
+    FreeImg(imgQ10_2);
 
+    // Q11
+    image imgQ11_0 = Image("*Z*oZooo*Zooo");
+    assert(CompteSousImagesGrises(imgQ11_0) == 1);
+     
+    image imgQ11_1 = Image("*oZ*Z*oZooo*Zooo *Z*oZooo*ZZoo");
+    assert(CompteSousImagesGrises(imgQ11_1) == 4);
+ 
+    image imgQ11_2 = Image("**o*oooo*ooooooo*oooo");
+    assert(CompteSousImagesGrises(imgQ11_2) == 0);
 
+    FreeImg(imgQ11_0);
+    FreeImg(imgQ11_1);
+    FreeImg(imgQ11_2);
+
+    // Q12
+    image imgQ12_0 = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*oooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
+    assert(Labyrinthe(imgQ12_0) == true);
+
+    image imgQ12_1 = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*ZooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
+    assert(Labyrinthe(imgQ12_1) == false);
+    
+    FreeImg(imgQ12_0);
+    FreeImg(imgQ12_1);
+    
+    printf("ALL TESTS PASSED!\n");
 }
 
 int main() {
     TEST();
+
+    image img = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*oooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
+    Dessine(img); 
+    printf("Traversable? : %s\n", Labyrinthe(img) ? "Yes" : "No");
+
+    FreeImg(img);
     return 0;
 }
 
