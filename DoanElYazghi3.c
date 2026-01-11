@@ -646,15 +646,33 @@ bool Labyrinthe(image img) {
 
 void TEST() {
     // Q5
-    image imgQ5 = Image("**o*oooo*ooooooo*oooo");
-    assert(DessinBlanc(imgQ5) == true);
-    assert(DessinNoir(imgQ5) == false);
-    FreeImg(imgQ5);
+    image imgQ5_0 = Image("**o*oooo*ooooooo*oooo");
+    assert(DessinBlanc(imgQ5_0) == true);
+    assert(DessinNoir(imgQ5_0) == false);
+    FreeImg(imgQ5_0);
+
+    image imgQ5_1 = Image("**ZZZZZZZ*ZZZZ*Z*ZZZZ");
+    assert(DessinBlanc(imgQ5_1) == false);
+    assert(DessinNoir(imgQ5_1) == true);
+    FreeImg(imgQ5_1);
+
+    image imgQ5_2 = Image("*Z*oZooo*Zooo");
+    assert(DessinBlanc(imgQ5_2) == false);
+    assert(DessinNoir(imgQ5_2) == false);
+    FreeImg(imgQ5_2);
 
     // Q6
-    image imgQ6 = Image("*Z*oZooZ*ZZZo");
-    assert(QuotaNoir(imgQ6) == 0.75f);
-    FreeImg(imgQ6);
+    image imgQ6_0 = Image("*Z*oZooZ*ZZZo");
+    assert(QuotaNoir(imgQ6_0) == 0.75f);
+    FreeImg(imgQ6_0);
+
+    image imgQ6_1 = Image("**o*oooo*ooooooo*oooo");
+    assert(QuotaNoir(imgQ6_1) == 0.f);
+    FreeImg(imgQ6_1);
+
+    image imgQ6_2 = Image("**ZZZZZZZ*ZZZZ*Z*ZZZZ");
+    assert(QuotaNoir(imgQ6_2) == 1.f);
+    FreeImg(imgQ6_2);
 
     // Q7
     image imgQ7 = Image("***ooZo**ZZoooZZ*Zoo*ZooZZ ***ooZZoZZ*o*ooZoo*Zooo*oZ*oooZo*Z*oZoZoo *Z**ooZoooZZ*oooZ **oZZZZ*oooZ*oZoo");
@@ -666,19 +684,31 @@ void TEST() {
     FreeImg(imgQ7_copy);
 
     // Q8
-    image imgQ8 = Diagonale(3);
-    image ans_imgQ8 = Image("***ZooZoo*ZooZoo**ZooZoo*ZooZ");
-    assert(equals(imgQ8, ans_imgQ8) == true);
-    FreeImg(imgQ8);
-    FreeImg(ans_imgQ8);
+    image imgQ8_0 = Diagonale(3);
+    image ans_imgQ8_0 = Image("***ZooZoo*ZooZoo**ZooZoo*ZooZ");
+    assert(equals(imgQ8_0, ans_imgQ8_0) == true);
+    FreeImg(imgQ8_0);
+    FreeImg(ans_imgQ8_0);
+
+    image imgQ8_1 = Diagonale(4);
+    assert(Profondeur(imgQ8_1) == 4);
+    // le QuotaNoir d'une diagonale de profondeur p est 1/(2^p)
+    assert(QuotaNoir(imgQ8_1) == 1.f/16);
+    FreeImg(imgQ8_1);
 
     // Q9
-    image imgQ9 = Image("* (*ZZZZ) (*Zo(*Z(*Z(*ZZZZ)(*ZZZZ)(*ZZZZ))ZZ)o) (*ZoZ(*ZoZ(*oooo))) (*oo(*oooo)o)");
-    image ans_imgQ9 = Image("*(*ZZZZ)(*ZoZo)(*ZoZ(*ZoZ(*oooo)))(*oooo)");
-    SimplifieProfP(&imgQ9, 2);
-    assert(equals(imgQ9, ans_imgQ9) == true);
-    FreeImg(imgQ9);
-    FreeImg(ans_imgQ9);
+    image imgQ9_0 = Image("* (*ZZZZ) (*Zo(*Z(*Z(*ZZZZ)(*ZZZZ)(*ZZZZ))ZZ)o) (*ZoZ(*ZoZ(*oooo))) (*oo(*oooo)o)");
+    image ans_imgQ9_0 = Image("*(*ZZZZ)(*ZoZo)(*ZoZ(*ZoZ(*oooo)))(*oooo)");
+    SimplifieProfP(&imgQ9_0, 2);
+    assert(equals(imgQ9_0, ans_imgQ9_0) == true);
+
+    SimplifieProfP(&imgQ9_0, 1);
+    image ans_imgQ9_1 = Image("* Z (*ZoZo) (*ZoZ(*ZoZ(*oooo))) o");
+    assert(equals(imgQ9_0, ans_imgQ9_1) == true);
+    
+    FreeImg(imgQ9_0);
+    FreeImg(ans_imgQ9_0);
+    FreeImg(ans_imgQ9_1);
 
     // Q10
     image imgQ10_0 = Image("***ooooZoZoZ**ooZZoo*ZooZ");
